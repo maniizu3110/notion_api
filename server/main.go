@@ -2,19 +2,29 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/dstotijn/go-notion"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
+	server.Run()
+	err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+	//TODO:テスト用
+	integrations_api_key := os.Getenv("INTEGRATIONS_APIKEY")
+	database_id := os.Getenv("DATABASE_ID")
+	
+	client := notion.NewClient(integrations_api_key)
 	e := echo.New()
-	//notionのAPIに接続してデータをとってくる処理に変更
-	client := notion.NewClient("secret_sJNm41y3NfWLd59bUvSeyYXlxKL4VmwvpYgHikItzhB")
 	e.GET("/", func(c echo.Context) error {
-		// TODO:環境変数をgitignoreから読み出す
-		page, err := client.FindDatabaseByID(context.Background(), "6be60152910541968272879f95ca6594")
+		page, err := client.FindDatabaseByID(context.Background(), database_id)
 		if err != nil {
 			return err
 		}
