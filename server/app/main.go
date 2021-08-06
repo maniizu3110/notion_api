@@ -54,11 +54,11 @@ func main() {
 
 	e := echo.New()
 	middlewares.CORS(e)
+	
 
+	
 	testKey := viper.GetString(`notion_test.key`)
-	fmt.Println(testKey)
 	testDB := viper.GetString(`notion_test.db_id`)
-	fmt.Println(testDB)
 	client := notion.NewClient(testKey)
 	e.GET("/", func(c echo.Context) error {
 		page, err := client.FindDatabaseByID(context.Background(), testDB)
