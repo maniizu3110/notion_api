@@ -11,6 +11,7 @@ import (
 
 func AssignNotionDatabaseHandlers(g *echo.Group) {
 	//ここでDI実装する
+	
 	g.GET("/", GetDatabaseByID)
 }
 

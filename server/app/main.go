@@ -48,7 +48,6 @@ func main() {
 			log.Fatal(err)
 		}
 	}()
-
 	InitRouter(dbConn)
 }
 
@@ -57,8 +56,17 @@ func InitRouter(db *gorm.DB){
 	e := echo.New()
 	middlewares.CORS(e)
 
-	g := e.Group("/api/v1",middlewares.SetDB(db))
-	handler.AssignNotionDatabaseHandlers(g.Group("/databases"))                                                  // auth ok
-	handler.AssignBrockHandlers(g.Group("/block"))
-	e.Logger.Fatal(e.Start(":8080"))
+	//認証なしで利用できるエンドポイント
+	{
+		g := e.Group("/api/v1",middlewares.SetDB(db))
+		handler.AssignUserHandlers(g.Group("/user"))
+	}
+	
+	//認証が必要なエンドポイント
+	{
+		g := e.Group("/api/v1",middlewares.SetDB(db))
+		handler.AssignNotionDatabaseHandlers(g.Group("/databases"))                                                  // auth ok
+		handler.AssignBrockHandlers(g.Group("/block"))
+		e.Logger.Fatal(e.Start(":8080"))
+	}
 }
