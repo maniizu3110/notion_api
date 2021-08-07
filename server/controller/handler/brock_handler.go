@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/dstotijn/go-notion"
@@ -51,10 +50,19 @@ func CreateBrockChildrenHandler(c echo.Context)error{
 	block.Paragraph = textBlock
 	res,err := client.AppendBlockChildren(context.Background(),"349f28e31be94105b461ccde34cd6496",[]notion.Block{*block})
 	if err != nil {
-		fmt.Println(err.Error())
+		//一回成功メッセージ出した方が良さげ(本当はもしミスがあったら直したい)
 		return err
 	}
+	//自分のデータベースに保存する
+	// myBlock := new(models.MyBlock)
+	// myBlock.Block = res
+	// myBlock.DisplayTime = time.Now();
+	// result := db.Create(myBlock)
+	//sqlに登録
+	
+
 	return c.JSON(http.StatusOK, res)
+
 
 
 }
