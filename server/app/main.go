@@ -57,8 +57,8 @@ func InitRouter(db *gorm.DB){
 	e := echo.New()
 	middlewares.CORS(e)
 
-	g := e.Group("/api/v1")
+	g := e.Group("/api/v1",middlewares.SetDB(db))
 	handler.AssignNotionDatabaseHandlers(g.Group("/databases"))                                                  // auth ok
-	handler.AssignBrockHandlers(g.Group("/block")) 
+	handler.AssignBrockHandlers(g.Group("/block"))
 	e.Logger.Fatal(e.Start(":8080"))
 }

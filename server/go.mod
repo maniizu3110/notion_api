@@ -8,5 +8,6 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/labstack/echo/v4 v4.5.0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.8.1
 )
