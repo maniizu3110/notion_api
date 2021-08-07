@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4/middleware"
+	
 )
 
 func CORS(e *echo.Echo) {
@@ -13,4 +15,8 @@ func CORS(e *echo.Echo) {
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		AllowCredentials: true,
 	}))
+}
+
+func SetDB(db *gorm.DB,e *echo.Echo){
+
 }
