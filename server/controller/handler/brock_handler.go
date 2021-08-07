@@ -3,8 +3,11 @@ package handler
 import (
 	"context"
 	"net/http"
+	"server/models"
+	"time"
 
 	"github.com/dstotijn/go-notion"
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 )
@@ -53,41 +56,18 @@ func CreateBrockChildrenHandler(c echo.Context)error{
 		//一回成功メッセージ出した方が良さげ(本当はもしミスがあったら直したい)
 		return err
 	}
-	//自分のデータベースに保存する
-	// myBlock := new(models.MyBlock)
-	// myBlock.Block = res
-	// myBlock.DisplayTime = time.Now();
-	// result := db.Create(myBlock)
-	//sqlに登録
+	// 自分のデータベースに保存する
+	myBlock := new(models.MyBlock)
+	myBlock.Block = res
+	myBlock.DisplayTime = time.Now();
+
+	db := c.Get("Tx").(*gorm.DB)
+	result := db.Create(myBlock)
 	
 
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, result)
 
 
 
 }
-
-//www.notion.so/api-test-349f28e31be94105b461ccde34cd6496#32584c68d2a24e48b7ab93e7c4f15a85
-	// {
-    //         "object": "block",
-    //         "id": "f66b6724-872b-4e74-85d1-90612a45e047",
-    //         "type": "paragraph",
-    //         "created_time": "2021-08-01T04:14:00Z",
-    //         "last_edited_time": "2021-08-01T04:14:00Z",
-    //         "paragraph": {
-    //             "text": [
-    //                 {
-    //                     "type": "text",
-    //                     "annotations": {
-    //                         "color": "default"
-    //                     },
-    //                     "plain_text": "hey",
-    //                     "text": {
-    //                         "content": "hey"
-    //                     }
-    //                 }
-    //             ]
-    //         }
-    //     },
-
 
