@@ -5,6 +5,6 @@ import (
 
 type User struct {
 	Model
-	User string `json:"user"`
-	HashedPassword string `json:"hashed_password"`
+	User string `json:"user" validate:"required"`
+	HashedPassword string `json:"password" validate:"required,min=6"`
 }
