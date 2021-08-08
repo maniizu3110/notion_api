@@ -18,11 +18,12 @@ func AssignUserHandlers(g *echo.Group) {
 func CereateUserHandler(c echo.Context)error{
 	user := new(models.User)
 	err := c.Bind(user)
+	fmt.Printf("%+v",user)
 	if err != nil {
 		return err
 	}
 	fmt.Printf("%v",user)
-	return c.JSON(http.StatusOK,"ok")
+	return c.JSON(http.StatusOK,user)
 }
 
 func HashPassword(password string) (string, error) {
