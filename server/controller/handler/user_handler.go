@@ -37,9 +37,6 @@ func CereateUserHandler(c echo.Context)error{
 	db := c.Get("Tx").(*gorm.DB)
 	//TODO:ハッシュパスワードはリターンしない
 	result := db.Create(user)
-	type resParam struct {
-		User string
-	}
 	
 	return c.JSON(http.StatusOK,result)
 }
