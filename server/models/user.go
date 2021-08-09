@@ -1,10 +1,10 @@
 package models
 
-import (
-)
+import "github.com/jinzhu/gorm"
+
 
 type User struct {
-	Model
-	User string `json:"user" validate:"required"`
+	gorm.Model
+	User string `json:"user" gorm:"uniqueIndex" validate:"required" `
 	HashedPassword string `json:"password" validate:"required,min=6"`
 }
