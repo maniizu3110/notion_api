@@ -2,8 +2,12 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"server/models"
 	"server/util"
+	"time"
+
+	"github.com/o1egl/paseto"
 )
 
 type UserRepository interface {
@@ -13,16 +17,19 @@ type UserRepository interface {
 
 type UserService interface {
 	Create(data *models.User) (*models.User, error)
+	Login(data *models.User) (*models.LoginUserResponse, error)
 	SearchByUserName(username string, password string) ([]models.User, error)
 }
 
 type userServiceImpl struct {
-	repo UserRepository
+	config util.Config
+	repo   UserRepository
 }
 
-func NewUserService(repo UserRepository) UserService {
+func NewUserService(repo UserRepository, config util.Config) UserService {
 	res := &userServiceImpl{
-		repo: repo,
+		config: config,
+		repo:   repo,
 	}
 	return res
 }
@@ -48,4 +55,40 @@ func (u *userServiceImpl) SearchByUserName(username string, password string) ([]
 		return nil, errors.New("ユーザー名での検索に失敗しました")
 	}
 	return users, nil
+}
+
+//TODO:実装大きすぎるので区切る
+//TODO:同じ名前で登録できないようにバリデーションを修正する
+func (u *userServiceImpl) Login(inputData *models.User) (*models.LoginUserResponse, error) {
+	users, err := u.repo.SearchByUserName(inputData.User)
+	fmt.Printf("%v",users)
+	if err != nil {
+		return nil, errors.New("ユーザー名での検索に失敗しました")
+	}
+	if len(users) > 1 {
+		return nil, errors.New("複数のユーザーが該当しました。システム管理者に連絡してください。")
+	}
+	user := users[0]
+	err = util.CheckPassword(inputData.HashedPassword, user.HashedPassword)
+	if err != nil {
+		return nil, errors.New("パスワードのチェックに失敗しました")
+	}
+	duration := u.config.AccessTokenDuration
+	key := []byte(u.config.TokenSymmetricKey)
+	payload := &models.Payload{
+		ID:        user.ID,
+		Username:  user.User,
+		IssuedAt:  time.Now(),
+		ExpiredAt: time.Now().Add(duration),
+	}
+	accessToken, err := paseto.NewV2().Encrypt(key, payload, nil)
+	if err != nil {
+		return nil, errors.New("トークンの作成に失敗しました")
+	}
+	userRes := user.NewUserResponse()
+	res := &models.LoginUserResponse{
+		AccessToken: accessToken,
+		User:        userRes,
+	}
+	return res, nil
 }

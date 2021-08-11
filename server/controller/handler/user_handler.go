@@ -2,19 +2,14 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"server/controller/repositories"
 	"server/controller/services"
 	"server/models"
 	"server/util"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
-	"github.com/o1egl/paseto"
-	"github.com/spf13/viper"
 )
 
 func AssignUserHandlers(g *echo.Group) {
@@ -23,7 +18,7 @@ func AssignUserHandlers(g *echo.Group) {
 			config := c.Get("Ck").(util.Config)
 			db := c.Get(config.DatabaseKey).(*gorm.DB)
 			r := repositories.NewUserRepository(config, db)
-			s := services.NewUserService(r)
+			s := services.NewUserService(r, config)
 			c.Set("Service", s)
 			return handler(c)
 		}
@@ -46,70 +41,16 @@ func CreateUserHandler(c echo.Context) error {
 }
 
 func LoginUserHandler(c echo.Context) error {
+	service := c.Get("Service").(services.UserService)
 	inputedUser := new(models.User)
 	err := c.Bind(inputedUser)
 	if err != nil {
 		return errors.New("ログイン情報の取得に失敗しました")
 	}
-	db := c.Get("heyhey").(*gorm.DB)
-	data := new(models.User)
-	if err := db.Where("user = ?", inputedUser.User).First(data).Error; err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-	err = util.CheckPassword(inputedUser.HashedPassword, data.HashedPassword)
+	res, err := service.Login(inputedUser)
 	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-	duration, _ := time.ParseDuration("10m")
-	//DIから取ってくるように変更(冗長なのでまとめる)
-	key := []byte(viper.GetString(`database.token_symmetric_key`))
-	tokenID, err := uuid.NewRandom()
-	if err != nil {
-		return err
+		return errors.New("ログインできませんでした")
 	}
 
-	type Payload struct {
-		ID        uuid.UUID `json:"id"`
-		Username  string    `json:"username"`
-		IssuedAt  time.Time `json:"issued_at"`
-		ExpiredAt time.Time `json:"expired_at"`
-	}
-
-	payload := &Payload{
-		ID:        tokenID,
-		Username:  data.User,
-		IssuedAt:  time.Now(),
-		ExpiredAt: time.Now().Add(duration),
-	}
-	//ここでcreate処理しているので抽象化する
-	accessToken, err := paseto.NewV2().Encrypt(key, payload, nil)
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-
-	type loginUserResponse struct {
-		AccessToken string       `json:"access_token"`
-		User        userResponse `json:"user"`
-	}
-	resUser := newUserResponse(data)
-	res := loginUserResponse{
-		AccessToken: accessToken,
-		User:        resUser,
-	}
 	return c.JSON(http.StatusOK, res)
-}
-
-type userResponse struct {
-	User      string    `json:"user"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-func newUserResponse(user *models.User) userResponse {
-	return userResponse{
-		User:      user.User,
-		CreatedAt: user.CreatedAt,
-	}
 }
