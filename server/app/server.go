@@ -8,9 +8,9 @@ import (
 )
 
 type Server struct {
-	config      util.Config
-	db     		*gorm.DB
-	tokenMaker 	util.Maker
+	config     util.Config
+	db         *gorm.DB
+	tokenMaker util.Maker
 }
 
 // NewServer creates a new HTTP server and set up routing.
@@ -21,7 +21,7 @@ func NewServer(config util.Config, database *gorm.DB) (*Server, error) {
 	}
 	server := &Server{
 		config:     config,
-		db:      database,
+		db:         database,
 		tokenMaker: tokenMaker,
 	}
 	return server, nil

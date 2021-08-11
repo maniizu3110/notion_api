@@ -18,33 +18,34 @@ import (
 )
 
 func AssignUserHandlers(g *echo.Group) {
-	g = g.Group("",func(handler echo.HandlerFunc)echo.HandlerFunc{
+	g = g.Group("", func(handler echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			config := c.Get("Ck").(util.Config)
 			db := c.Get(config.DatabaseKey).(*gorm.DB)
-			r := repositories.NewUserRepository(config,db)
+			r := repositories.NewUserRepository(config, db)
 			s := services.NewUserService(r)
-			c.Set("Service",s)
+			c.Set("Service", s)
 			return handler(c)
 		}
 	})
 	g.POST("/", CreateUserHandler)
 	g.POST("/login", LoginUserHandler)
 }
+
 //TODO:同じ名前のユーザーを登録することはできない
 //TODO:Createした後にもログイン処理をする
-func CreateUserHandler(c echo.Context)error{
+func CreateUserHandler(c echo.Context) error {
 	service := c.Get("Service").(services.UserService)
 	user := new(models.User)
 	err := c.Bind(user)
-	data,err := service.Create(user)
+	data, err := service.Create(user)
 	if err != nil {
 		return errors.New("ユーザー情報の取得に失敗したため登録できませんでした")
 	}
-	return c.JSON(http.StatusOK,data)
+	return c.JSON(http.StatusOK, data)
 }
 
-func LoginUserHandler(c echo.Context)error{
+func LoginUserHandler(c echo.Context) error {
 	inputedUser := new(models.User)
 	err := c.Bind(inputedUser)
 	if err != nil {
@@ -56,12 +57,12 @@ func LoginUserHandler(c echo.Context)error{
 		fmt.Println(err.Error())
 		return err
 	}
-	err = util.CheckPassword(inputedUser.HashedPassword,data.HashedPassword)
+	err = util.CheckPassword(inputedUser.HashedPassword, data.HashedPassword)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
 	}
-	duration,_ := time.ParseDuration("10m")
+	duration, _ := time.ParseDuration("10m")
 	//DIから取ってくるように変更(冗長なのでまとめる)
 	key := []byte(viper.GetString(`database.token_symmetric_key`))
 	tokenID, err := uuid.NewRandom()
@@ -70,10 +71,10 @@ func LoginUserHandler(c echo.Context)error{
 	}
 
 	type Payload struct {
-	ID        uuid.UUID `json:"id"`
-	Username  string    `json:"username"`
-	IssuedAt  time.Time `json:"issued_at"`
-	ExpiredAt time.Time `json:"expired_at"`
+		ID        uuid.UUID `json:"id"`
+		Username  string    `json:"username"`
+		IssuedAt  time.Time `json:"issued_at"`
+		ExpiredAt time.Time `json:"expired_at"`
 	}
 
 	payload := &Payload{
@@ -83,7 +84,7 @@ func LoginUserHandler(c echo.Context)error{
 		ExpiredAt: time.Now().Add(duration),
 	}
 	//ここでcreate処理しているので抽象化する
-	accessToken,err := paseto.NewV2().Encrypt(key,payload,nil)
+	accessToken, err := paseto.NewV2().Encrypt(key, payload, nil)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -98,16 +99,17 @@ func LoginUserHandler(c echo.Context)error{
 		AccessToken: accessToken,
 		User:        resUser,
 	}
-	return c.JSON(http.StatusOK,res)
+	return c.JSON(http.StatusOK, res)
 }
+
 type userResponse struct {
-	User             string    `json:"user"`
-	CreatedAt         time.Time `json:"created_at"`
+	User      string    `json:"user"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func newUserResponse(user *models.User) userResponse {
 	return userResponse{
-		User:             user.User,
-		CreatedAt:         user.CreatedAt,
+		User:      user.User,
+		CreatedAt: user.CreatedAt,
 	}
 }

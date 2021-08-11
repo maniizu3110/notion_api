@@ -10,9 +10,9 @@ import (
 )
 
 // SetConfMiddleware set a config and db in context
-func SetConf(config util.Config,db *gorm.DB) echo.MiddlewareFunc {
-    return func(next echo.HandlerFunc) echo.HandlerFunc {
-        return func(c echo.Context) error {
+func SetConf(config util.Config, db *gorm.DB) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
 			tx := db.Begin()
 			//TODO：API叩かれたときではなく、サーバー起動時に呼ばれるべき処理?
 			database.Migrate(tx)
@@ -25,6 +25,6 @@ func SetConf(config util.Config,db *gorm.DB) echo.MiddlewareFunc {
 			}
 			tx.Commit()
 			return nil
-        }
-    }
+		}
+	}
 }

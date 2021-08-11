@@ -1,14 +1,11 @@
 package database
 
 import (
-	"server/models"
 	"github.com/jinzhu/gorm"
+	"server/models"
 )
 
-
-
-
-func Migrate(db *gorm.DB){
+func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&models.MyBlock{})
 	db.AutoMigrate(&models.User{})
 }

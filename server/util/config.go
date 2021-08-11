@@ -11,16 +11,16 @@ import (
 //ここに記述するのは公開されても問題ない情報
 type Config struct {
 	DBDriver            string        `mapstructure:"DB_DRIVER"`
-	DBPort          string        `mapstructure:"DB_PORT"`
-	DBUser          string        `mapstructure:"DB_USER"`
+	DBPort              string        `mapstructure:"DB_PORT"`
+	DBUser              string        `mapstructure:"DB_USER"`
 	DBPassword          string        `mapstructure:"DB_PASSWORD"`
-	DBAddress          string        `mapstructure:"DB_ADDRESS"`
-	DBName          string        `mapstructure:"DB_NAME"`
-	ServerAddress          string        `mapstructure:"SERVER_ADDRESS"`
+	DBAddress           string        `mapstructure:"DB_ADDRESS"`
+	DBName              string        `mapstructure:"DB_NAME"`
+	ServerAddress       string        `mapstructure:"SERVER_ADDRESS"`
 	TokenSymmetricKey   string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
-	DatabaseKey string `mapstructure:"DATABASE_KEY"`
-	ConfigKey string `mapstructure:"CONFIG_KEY"`
+	DatabaseKey         string        `mapstructure:"DATABASE_KEY"`
+	ConfigKey           string        `mapstructure:"CONFIG_KEY"`
 }
 
 // LoadConfig reads configuration from file or environment variables.
