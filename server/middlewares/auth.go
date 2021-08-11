@@ -18,7 +18,7 @@ const (
 
 
 // AuthMiddleware creates a middleware for authorization
-func AuthMiddleware() echo.MiddlewareFunc {
+func AuthMiddleware(tokenMaker util.Maker) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc)echo.HandlerFunc{
 		return echo.HandlerFunc(func(c echo.Context)error{
 		authorizationHeader := c.Request().Header.Get("Authorization")
@@ -45,10 +45,6 @@ func AuthMiddleware() echo.MiddlewareFunc {
 		}
 
 		accessToken := fields[1]
-		tokenMaker, err := util.NewPasetoMaker()
-		if err != nil {
-			return err
-		}
 		payload, err := tokenMaker.VerifyToken(accessToken)
 		if err != nil {
 			return err
