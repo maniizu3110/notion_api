@@ -10,4 +10,5 @@ import (
 
 func Migrate(db *gorm.DB){
 	db.AutoMigrate(&models.MyBlock{})
+	db.AutoMigrate(&models.User{})
 }
