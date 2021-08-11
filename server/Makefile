@@ -2,6 +2,5 @@
 run:
 	go run main.go
 
-.PHONY: lint
-lint:
+lint :
 	gofmt -s -w .
