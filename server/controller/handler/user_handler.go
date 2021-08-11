@@ -21,6 +21,7 @@ func AssignUserHandlers(g *echo.Group) {
 	g.POST("/login", LoginUserHandler)
 }
 //TODO:同じ名前のユーザーを登録することはできない
+//TODO:Createした後にもログイン処理をする
 func CereateUserHandler(c echo.Context)error{
 	user := new(models.User)
 	err := c.Bind(user)
@@ -58,7 +59,7 @@ func LoginUserHandler(c echo.Context)error{
 		fmt.Println(err.Error())
 		return err
 	}
-	duration,_ := time.ParseDuration("2m")
+	duration,_ := time.ParseDuration("10m")
 	//DIから取ってくるように変更(冗長なのでまとめる)
 	key := []byte(viper.GetString(`database.token_symmetric_key`))
 	tokenID, err := uuid.NewRandom()
@@ -79,6 +80,7 @@ func LoginUserHandler(c echo.Context)error{
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}
+	//ここでcreate処理しているので抽象化する
 	accessToken,err := paseto.NewV2().Encrypt(key,payload,nil)
 	if err != nil {
 		fmt.Println(err.Error())

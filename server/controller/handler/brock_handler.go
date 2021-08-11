@@ -25,7 +25,7 @@ func GetBrockByIDHandler(c echo.Context)error{
 	testKey := viper.GetString(`notion_test.key`)
 	client := notion.NewClient(testKey)
 	query := new(notion.PaginationQuery)
-	block, err := client.FindBlockChildrenByID(context.Background(), "349f28e31be94105b461ccde34cd6496", query)
+	block, err := client.FindBlockChildrenByID(context.Background(), "835e6484764448d9ab7b438cb1db8eeb", query)
 	if err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/aead/chacha20poly1305"
 	"github.com/o1egl/paseto"
+	"github.com/spf13/viper"
 )
 
 // PasetoMaker is a PASETO token maker
@@ -15,7 +16,8 @@ type PasetoMaker struct {
 }
 
 // NewPasetoMaker creates a new PasetoMaker
-func NewPasetoMaker(symmetricKey string) (Maker, error) {
+func NewPasetoMaker() (Maker, error) {
+	symmetricKey := []byte(viper.GetString(`database.token_symmetric_key`))
 	if len(symmetricKey) != chacha20poly1305.KeySize {
 		return nil, fmt.Errorf("invalid key size: must be exactly %d characters", chacha20poly1305.KeySize)
 	}

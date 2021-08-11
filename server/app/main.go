@@ -64,9 +64,17 @@ func InitRouter(db *gorm.DB){
 	
 	//認証が必要なエンドポイント
 	{
-		g := e.Group("/api/v1",middlewares.SetDB(db))
+		g := e.Group("/api/v1",middlewares.SetDB(db),middlewares.AuthMiddleware())
 		handler.AssignNotionDatabaseHandlers(g.Group("/databases"))                                                  // auth ok
 		handler.AssignBrockHandlers(g.Group("/block"))
-		e.Logger.Fatal(e.Start(":8080"))
 	}
+	e.Logger.Fatal(e.Start(":8080"))
 }
+
+// {
+//     "access_token": "v2.local.GG4LIJPv7ZOW3oFQOz99E8VQj0JcQspHSp3M-VDzk4Iln7Q5diMYZrAZul2jED4_oupWwWOjhr9YZlkbwsld2gv1EiOh2H2PsE9bIVQKLAetJnHIuienj20vxEot3GhPyJUnvLnvtbFcn2iHnJhLOX0DqFUr2zzkCZrYdqmxQSqVRZoMTpSwCagL0VUR5v2kPqGRDthKAZ4bDwJr1M3VaVZ0CSICWyYRn4airo-_ktnqhzeZLmCva8EcA8OYcurBgq020pVjgO8.bnVsbA",
+//     "user": {
+//         "user": "leoleo",
+//         "created_at": "2021-08-11T12:19:06+09:00"
+//     }
+// }
