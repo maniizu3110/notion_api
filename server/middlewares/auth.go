@@ -49,7 +49,7 @@ func AuthMiddleware(tokenMaker util.Maker) echo.MiddlewareFunc {
 		if err != nil {
 			return err
 		}
-
+		
 		return c.JSON(http.StatusOK,payload)
 		})
 		}

@@ -4,19 +4,20 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"server/server"
+	"server/app"
 	"server/util"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
 
+
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
-
+	
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", config.DBUser, config.DBPassword, config.DBAddress, config.DBPort, config.DBName)
 	val := url.Values{}
 	val.Add("parseTime", "1")
@@ -33,11 +34,9 @@ func main() {
 		}
 	}()
 
-	server, err := server.NewServer(config,dbConn)
+	server, err := app.NewServer(config,dbConn)
 	if err != nil {
 		log.Fatal("cannot create server:", err)
 	}
-
-	server.Start(config.ServerAddress)
+	app.InitRouter(server)
 }
-

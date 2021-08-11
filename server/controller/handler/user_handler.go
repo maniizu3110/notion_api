@@ -15,14 +15,15 @@ import (
 )
 
 func AssignUserHandlers(g *echo.Group) {
+	fmt.Println("handler入り")
 	//create DI
 	
-	g.POST("/", CereateUserHandler)
+	g.POST("/", CreateUserHandler)
 	g.POST("/login", LoginUserHandler)
 }
 //TODO:同じ名前のユーザーを登録することはできない
 //TODO:Createした後にもログイン処理をする
-func CereateUserHandler(c echo.Context)error{
+func CreateUserHandler(c echo.Context)error{
 	user := new(models.User)
 	err := c.Bind(user)
 	//naked password in this point
@@ -35,7 +36,7 @@ func CereateUserHandler(c echo.Context)error{
 		return c.JSON(http.StatusInternalServerError,err)
 	}
 	user.HashedPassword = hashedPassword
-	db := c.Get("Tx").(*gorm.DB)
+	db := c.Get("heyhey").(*gorm.DB)
 	//TODO:ハッシュパスワードはリターンしない
 	result := db.Create(user)
 	
@@ -43,12 +44,13 @@ func CereateUserHandler(c echo.Context)error{
 }
 
 func LoginUserHandler(c echo.Context)error{
+	
 	inputedUser := new(models.User)
 	err := c.Bind(inputedUser)
-	db := c.Get("Tx").(*gorm.DB)
 	if err != nil {
 		return err
 	}
+	db := c.Get("heyhey").(*gorm.DB)
 	data := new(models.User)
 	if err := db.Where("user = ?", inputedUser.User).First(data).Error; err != nil {
 		fmt.Println(err.Error())
