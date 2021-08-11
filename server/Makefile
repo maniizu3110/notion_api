@@ -1,3 +1,7 @@
 .PHONY:run
 run:
-	go run app/main.go
+	go run main.go
+
+.PHONY: lint
+lint:
+	gofmt -s -w .
