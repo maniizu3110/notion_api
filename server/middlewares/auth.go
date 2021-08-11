@@ -55,7 +55,6 @@ func AuthMiddleware() echo.MiddlewareFunc {
 		}
 
 		return c.JSON(http.StatusOK,payload)
-		return nil
 		})
 		}
 	}
