@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"server/controller/repositories"
+	"server/controller/services"
 	"server/models"
 	"server/util"
 	"time"
@@ -15,40 +18,37 @@ import (
 )
 
 func AssignUserHandlers(g *echo.Group) {
-	fmt.Println("handler入り")
-	//create DI
-	
+	g = g.Group("",func(handler echo.HandlerFunc)echo.HandlerFunc{
+		return func(c echo.Context) error {
+			config := c.Get("Ck").(util.Config)
+			db := c.Get(config.DatabaseKey).(*gorm.DB)
+			r := repositories.NewUserRepository(config,db)
+			s := services.NewUserService(r)
+			c.Set("Service",s)
+			return handler(c)
+		}
+	})
 	g.POST("/", CreateUserHandler)
 	g.POST("/login", LoginUserHandler)
 }
 //TODO:同じ名前のユーザーを登録することはできない
 //TODO:Createした後にもログイン処理をする
 func CreateUserHandler(c echo.Context)error{
+	service := c.Get("Service").(services.UserService)
 	user := new(models.User)
 	err := c.Bind(user)
-	//naked password in this point
-	password := user.HashedPassword
+	data,err := service.Create(user)
 	if err != nil {
-		return err
+		return errors.New("ユーザー情報の取得に失敗したため登録できませんでした")
 	}
-	hashedPassword, err := util.HashPassword(password)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError,err)
-	}
-	user.HashedPassword = hashedPassword
-	db := c.Get("heyhey").(*gorm.DB)
-	//TODO:ハッシュパスワードはリターンしない
-	result := db.Create(user)
-	
-	return c.JSON(http.StatusOK,result)
+	return c.JSON(http.StatusOK,data)
 }
 
 func LoginUserHandler(c echo.Context)error{
-	
 	inputedUser := new(models.User)
 	err := c.Bind(inputedUser)
 	if err != nil {
-		return err
+		return errors.New("ログイン情報の取得に失敗しました")
 	}
 	db := c.Get("heyhey").(*gorm.DB)
 	data := new(models.User)
