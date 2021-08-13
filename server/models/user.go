@@ -8,12 +8,12 @@ import (
 
 type User struct {
 	gorm.Model
-	User           string `json:"user" validate:"required"`
+	User           string `json:"user" gorm:"unique not null"`
 	HashedPassword string `json:"-" validate:"min=6"`
 }
 
 type LoginUserResponse struct {
-	AccessToken string       `json:"access_token"`
+	AccessToken string       `json:"access_token" gorm:"not null"`
 	User        UserResponse `json:"user"`
 }
 
