@@ -77,7 +77,7 @@ func (u *userServiceImpl) Login(inputData *models.User) (*models.LoginUserRespon
 
 	duration := u.config.AccessTokenDuration
 
-	accessToken,err := u.tokenMaker.CreateToken(user.User,duration)
+	accessToken,err := u.tokenMaker.CreateToken(user.ID,user.User,duration)
 	if err != nil {
 		return nil, errors.New("トークンの作成に失敗しました")
 	}
