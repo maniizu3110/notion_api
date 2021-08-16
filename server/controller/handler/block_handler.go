@@ -1,18 +1,18 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"server/controller/repositories"
 	"server/controller/services"
 	"server/models"
 	"server/util"
-	"errors"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 )
 
-func AssignBrockHandlers(g *echo.Group) {
+func AssignBlockHandlers(g *echo.Group) {
 	g = g.Group("", func(handler echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			config := c.Get("Ck").(util.Config)
@@ -24,11 +24,11 @@ func AssignBrockHandlers(g *echo.Group) {
 			return handler(c)
 		}
 	})
-	g.GET("/", GetBrockByIDHandler)
-	g.POST("/", CreateBrockChildrenHandler)
+	g.GET("/", GetBlockByIDHandler)
+	g.POST("/", CreateBlockChildrenHandler)
 }
 
-func GetBrockByIDHandler(c echo.Context) error {
+func GetBlockByIDHandler(c echo.Context) error {
 	service := c.Get("Service").(services.BlockService)
 	var params struct{
 		SecretKey string
@@ -45,7 +45,7 @@ func GetBrockByIDHandler(c echo.Context) error {
 	
 }
 
-func CreateBrockChildrenHandler(c echo.Context) error {
+func CreateBlockChildrenHandler(c echo.Context) error {
 	service := c.Get("Service").(services.BlockService)
 	var params struct{
 		SecretKey string
