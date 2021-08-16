@@ -34,6 +34,9 @@ func CreateUserHandler(c echo.Context) error {
 	service := c.Get("Service").(services.UserService)
 	user := new(models.User)
 	err := c.Bind(user)
+	if err != nil {
+		return err
+	}
 	data, err := service.Create(user)
 	if err != nil {
 		return errors.New("ユーザー情報の取得に失敗したため登録できませんでした")

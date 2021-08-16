@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"server/models"
 
 	"github.com/dstotijn/go-notion"
@@ -69,11 +68,9 @@ func (u *blockServiceImpl) GetChildren(key string, blockID string) (notion.Block
 	query := new(notion.PaginationQuery)
 	block, err := client.FindBlockChildrenByID(context.Background(), blockID, query)
 	if err != nil {
-		fmt.Println(err)
 		return notion.BlockChildrenResponse{}, err
 	}
 	if len(block.Results) == 0 {
-		fmt.Println(err)
 		return notion.BlockChildrenResponse{}, err
 	}
 

@@ -47,6 +47,7 @@ func GetBlockByIDHandler(c echo.Context) error {
 
 func CreateBlockChildrenHandler(c echo.Context) error {
 	service := c.Get("Service").(services.BlockService)
+	//大文字と小文字を統一しておきたい
 	var params struct {
 		SecretKey     string
 		ParentBlockID string

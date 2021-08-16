@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"server/models"
 	"server/util"
 )
@@ -60,7 +59,6 @@ func (u *userServiceImpl) SearchByUserName(username string, password string) ([]
 //TODO:同じ名前で登録できないようにバリデーションを修正する
 func (u *userServiceImpl) Login(inputData *models.User) (*models.LoginUserResponse, error) {
 	users, err := u.repo.SearchByUserName(inputData.User)
-	fmt.Printf("%v", users)
 	if err != nil {
 		return nil, errors.New("ユーザー名での検索に失敗しました")
 	}
