@@ -30,35 +30,35 @@ func AssignBlockHandlers(g *echo.Group) {
 
 func GetBlockByIDHandler(c echo.Context) error {
 	service := c.Get("Service").(services.BlockService)
-	var params struct{
-		SecretKey string
+	var params struct {
+		SecretKey     string
 		ParentBlockID string
 	}
 	if err := c.Bind(&params); err != nil {
 		return errors.New("送られた情報を取得できませんでした")
 	}
-	data,err := service.GetChildren(params.SecretKey,params.ParentBlockID)
+	data, err := service.GetChildren(params.SecretKey, params.ParentBlockID)
 	if err != nil {
 		return errors.New("ブロックの取得に失敗しました")
 	}
 	return c.JSON(http.StatusOK, data)
-	
+
 }
 
 func CreateBlockChildrenHandler(c echo.Context) error {
 	service := c.Get("Service").(services.BlockService)
-	var params struct{
-		SecretKey string
+	var params struct {
+		SecretKey     string
 		ParentBlockID string
-		MyBlock models.MyBlock
+		MyBlocks      []models.MyBlock
 	}
 	if err := c.Bind(&params); err != nil {
 		return errors.New("送られた情報を取得できませんでした")
 	}
-	//dataなど何が帰ってくるかわからない
-	data,err := service.AddChild(params.SecretKey,params.ParentBlockID,params.MyBlock)
+	return c.JSON(http.StatusOK, params)
+	block, err := service.AddChild(params.SecretKey, params.ParentBlockID, params.MyBlocks)
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK,data)
+	return c.JSON(http.StatusOK, block)
 }
