@@ -16,9 +16,10 @@ func AssignUserHandlers(g *echo.Group) {
 	g = g.Group("", func(handler echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			config := c.Get("Ck").(util.Config)
+			tokenMaker := c.Get("Tk").(util.Maker)
 			db := c.Get(config.DatabaseKey).(*gorm.DB)
 			r := repositories.NewUserRepository(config, db)
-			s := services.NewUserService(r, config)
+			s := services.NewUserService(r, config,tokenMaker)
 			c.Set("Service", s)
 			return handler(c)
 		}

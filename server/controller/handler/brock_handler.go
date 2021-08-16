@@ -19,11 +19,11 @@ func AssignBrockHandlers(g *echo.Group) {
 }
 
 func GetBrockByIDHandler(c echo.Context) error {
-	//この辺はフロントから指定したい
-	testKey := viper.GetString(`notion_test.key`)
+	//この辺りはユーザー情報に紐づけるデータベースを作成しておいて、そこからどれを使うか選択できるようにしておく
+	testKey := "secret_sJNm41y3NfWLd59bUvSeyYXlxKL4VmwvpYgHikItzhB"
 	client := notion.NewClient(testKey)
 	query := new(notion.PaginationQuery)
-	block, err := client.FindBlockChildrenByID(context.Background(), "835e6484764448d9ab7b438cb1db8eeb", query)
+	block, err := client.FindBlockChildrenByID(context.Background(), "b8643af68f9340438e99b30f4586a332", query)
 	if err != nil {
 		return err
 	}

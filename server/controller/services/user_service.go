@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"server/models"
 	"server/util"
-	"time"
 
-	"github.com/o1egl/paseto"
 )
 
 type UserRepository interface {
@@ -24,12 +22,14 @@ type UserService interface {
 type userServiceImpl struct {
 	config util.Config
 	repo   UserRepository
+	tokenMaker util.Maker
 }
 
-func NewUserService(repo UserRepository, config util.Config) UserService {
+func NewUserService(repo UserRepository, config util.Config,tokenMaker util.Maker) UserService {
 	res := &userServiceImpl{
 		config: config,
 		repo:   repo,
+		tokenMaker: tokenMaker,
 	}
 	return res
 }
@@ -73,15 +73,11 @@ func (u *userServiceImpl) Login(inputData *models.User) (*models.LoginUserRespon
 	if err != nil {
 		return nil, errors.New("パスワードのチェックに失敗しました")
 	}
+
+
 	duration := u.config.AccessTokenDuration
-	key := []byte(u.config.TokenSymmetricKey)
-	payload := &models.Payload{
-		ID:        user.ID,
-		Username:  user.User,
-		IssuedAt:  time.Now(),
-		ExpiredAt: time.Now().Add(duration),
-	}
-	accessToken, err := paseto.NewV2().Encrypt(key, payload, nil)
+
+	accessToken,err := u.tokenMaker.CreateToken(user.User,duration)
 	if err != nil {
 		return nil, errors.New("トークンの作成に失敗しました")
 	}
@@ -90,5 +86,7 @@ func (u *userServiceImpl) Login(inputData *models.User) (*models.LoginUserRespon
 		AccessToken: accessToken,
 		User:        userRes,
 	}
+
+
 	return res, nil
 }

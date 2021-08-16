@@ -42,7 +42,7 @@ func AuthMiddleware(tokenMaker util.Maker) echo.MiddlewareFunc {
 					return err
 				}
 			}
-
+			
 			accessToken := fields[1]
 			payload, err := tokenMaker.VerifyToken(accessToken)
 			if err != nil {
