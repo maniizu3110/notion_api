@@ -9,7 +9,6 @@ import (
 	"github.com/dstotijn/go-notion"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
-	"github.com/spf13/viper"
 )
 
 func AssignBrockHandlers(g *echo.Group) {
@@ -28,10 +27,11 @@ func GetBrockByIDHandler(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, block)
+
 }
 
 func CreateBrockChildrenHandler(c echo.Context) error {
-	testKey := viper.GetString(`notion_test.key`)
+	testKey := "secret_sJNm41y3NfWLd59bUvSeyYXlxKL4VmwvpYgHikItzhB"
 	// 	//データベースに紐づく値を入れる(状態管理でログイン時に持っておきたい情報)
 	client := notion.NewClient(testKey)
 
