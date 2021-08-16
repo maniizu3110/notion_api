@@ -13,7 +13,7 @@ type BlockRepository interface {
 }
 
 type BlockService interface {
-	AddChild(key string,blockID string,block models.MyBlock) (*models.MyBlock, error)
+	AddChild(key string,blockID string,myBlock models.MyBlock) (notion.Block, error)
 	GetChildren(key string,blockID string) (notion.BlockChildrenResponse, error)
 }
 
@@ -30,12 +30,13 @@ func NewBlockService(repo BlockRepository, user *models.User) BlockService {
 	return res
 }
 
-func (u *blockServiceImpl) AddChild(key string,blockID string,block models.MyBlock) (*models.MyBlock, error) {
+func (u *blockServiceImpl) AddChild(key string,blockID string,myBlock models.MyBlock) (notion.Block, error) {
 	client := notion.NewClient(key)
+	//自分のデータベースに保存する処理の追加(最初に追加してその後notionAPIに合わせた方がロールバックしやすい)
+
 
 	childText := new(notion.Text)
 	childText.Content = "test"
-
 	parentText := new(notion.RichText)
 	parentText.Type = "text"
 	parentText.Text = childText
@@ -47,22 +48,23 @@ func (u *blockServiceImpl) AddChild(key string,blockID string,block models.MyBlo
 	block.Object = "block"
 	block.Type = "paragraph"
 	block.Paragraph = textBlock
-	res, err := client.AppendBlockChildren(context.Background(), "349f28e31be94105b461ccde34cd6496", []notion.Block{*block})
+	res, err := client.AppendBlockChildren(context.Background(), blockID, []notion.Block{*block})
 	if err != nil {
 		//一回成功メッセージ出した方が良さげ(本当はもしミスがあったら直したい)
-		return err
+		return notion.Block{},err
 	}
+	return res,nil
 	// 自分のデータベースに保存する
-	myBlock := new(models.MyBlock)
-	myBlock.Block = res
-	myBlock.DisplayTime = time.Now()
+	// myBlock := new(models.MyBlock)
+	// myBlock.Block = res
+	// myBlock.DisplayTime = time.Now()
 
-	db := c.Get("Tx").(*gorm.DB)
-	result := db.Create(myBlock)
+	// db := c.Get("Tx").(*gorm.DB)
+	// result := db.Create(myBlock)
 
-	return c.JSON(http.StatusOK, result)
+	// return c.JSON(http.StatusOK, result)
 
-	return new(models.MyBlock), nil
+	// return new(models.MyBlock), nil
 }
 func (u *blockServiceImpl) GetChildren(key string,blockID string) (notion.BlockChildrenResponse, error) {
 	client := notion.NewClient(key)
