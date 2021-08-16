@@ -13,13 +13,14 @@ func InitRouter(serverConf *Server) {
 
 	//認証なしで利用できるエンドポイント
 	{
-		g := e.Group("/api/v1", middlewares.SetConf(serverConf.config, serverConf.db))
+		g := e.Group("/api/v1", middlewares.SetConfWithTokenMaker(serverConf.config, serverConf.db, serverConf.tokenMaker))
 		handler.AssignUserHandlers(g.Group("/user"))
 	}
 
 	//認証が必要なエンドポイント
 	{
-		g := e.Group("/api/v1", middlewares.SetConf(serverConf.config, serverConf.db))
+		//TODO:複数middlewareある時のnext(c)の挙動に注意
+		g := e.Group("/api/v1", middlewares.SetConf(serverConf.config, serverConf.db),middlewares.AuthMiddleware(serverConf.tokenMaker))
 		handler.AssignNotionDatabaseHandlers(g.Group("/databases")) // auth ok
 		handler.AssignBrockHandlers(g.Group("/block"))
 	}

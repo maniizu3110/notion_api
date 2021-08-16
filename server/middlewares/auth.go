@@ -3,7 +3,7 @@ package middlewares
 import (
 	"errors"
 	"fmt"
-	"net/http"
+	// "net/http"
 	"server/util"
 	"strings"
 
@@ -19,7 +19,7 @@ const (
 // AuthMiddleware creates a middleware for authorization
 func AuthMiddleware(tokenMaker util.Maker) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return echo.HandlerFunc(func(c echo.Context) error {
+		return func(c echo.Context) error {
 			authorizationHeader := c.Request().Header.Get("Authorization")
 			if len(authorizationHeader) == 0 {
 				err := errors.New("authorization header is not provided")
@@ -48,8 +48,11 @@ func AuthMiddleware(tokenMaker util.Maker) echo.MiddlewareFunc {
 			if err != nil {
 				return err
 			}
-
-			return c.JSON(http.StatusOK, payload)
-		})
+			user := util.SetUser(payload)
+			//idとuserにしか値が入っていないことに注意
+			c.Set("user",user)
+			// return c.JSON(http.StatusOK,user)
+			return next(c)
+		}
 	}
 }
