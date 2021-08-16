@@ -28,14 +28,14 @@ func SetConf(config util.Config, db *gorm.DB) echo.MiddlewareFunc {
 		}
 	}
 }
-func SetConfWithTokenMaker(config util.Config, db *gorm.DB,tokenMaker util.Maker) echo.MiddlewareFunc {
+func SetConfWithTokenMaker(config util.Config, db *gorm.DB, tokenMaker util.Maker) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			tx := db.Begin()
 			database.Migrate(tx)
 			c.Set(config.DatabaseKey, tx)
 			c.Set("Ck", config)
-			c.Set("Tk",tokenMaker)
+			c.Set("Tk", tokenMaker)
 			if err := next(c); err != nil {
 				tx.Rollback()
 				logrus.Debugln("Transaction Rollback")
@@ -46,4 +46,3 @@ func SetConfWithTokenMaker(config util.Config, db *gorm.DB,tokenMaker util.Maker
 		}
 	}
 }
-

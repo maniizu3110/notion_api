@@ -19,7 +19,7 @@ func AssignUserHandlers(g *echo.Group) {
 			tokenMaker := c.Get("Tk").(util.Maker)
 			db := c.Get(config.DatabaseKey).(*gorm.DB)
 			r := repositories.NewUserRepository(config, db)
-			s := services.NewUserService(r, config,tokenMaker)
+			s := services.NewUserService(r, config, tokenMaker)
 			c.Set("Service", s)
 			return handler(c)
 		}

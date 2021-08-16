@@ -3,13 +3,11 @@ package util
 import (
 	"errors"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // Maker is an interface for managing tokens
 type Maker interface {
-	CreateToken(id uint,user string, duration time.Duration) (string, error)
+	CreateToken(id uint, user string, duration time.Duration) (string, error)
 	// VerifyToken checks if the token is valid or not
 	VerifyToken(token string) (*Payload, error)
 }
@@ -22,21 +20,16 @@ var (
 
 // Payload contains the payload data of the token
 type Payload struct {
-	ID        uuid.UUID `json:"id"`
+	ID        uint      `json:"id"`
 	User      string    `json:"username"`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `json:"expired_at"`
 }
 
 // NewPayload creates a new token payload with a specific username and duration
-func NewPayload(user string, duration time.Duration) (*Payload, error) {
-	tokenID, err := uuid.NewRandom()
-	if err != nil {
-		return nil, err
-	}
-
+func NewPayload(id uint, user string, duration time.Duration) (*Payload, error) {
 	payload := &Payload{
-		ID:        tokenID,
+		ID:        id,
 		User:      user,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
