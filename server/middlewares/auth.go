@@ -3,7 +3,6 @@ package middlewares
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"server/util"
 	"strings"
 
@@ -49,7 +48,8 @@ func AuthMiddleware(tokenMaker util.Maker) echo.MiddlewareFunc {
 				return err
 			}
 
-			return c.JSON(http.StatusOK, payload)
+			c.Set("user",util.SetUser(payload))
+			return nil
 		})
 	}
 }
