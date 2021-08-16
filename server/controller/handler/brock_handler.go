@@ -3,8 +3,12 @@ package handler
 import (
 	"context"
 	"net/http"
+	"server/controller/repositories"
+	"server/controller/services"
 	"server/models"
+	"server/util"
 	"time"
+	"errors"
 
 	"github.com/dstotijn/go-notion"
 	"github.com/jinzhu/gorm"
@@ -12,56 +16,52 @@ import (
 )
 
 func AssignBrockHandlers(g *echo.Group) {
-	//ここでDI実装する
+	g = g.Group("", func(handler echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			config := c.Get("Ck").(util.Config)
+			db := c.Get(config.DatabaseKey).(*gorm.DB)
+			user := c.Get("user").(*models.User)
+			r := repositories.NewBlockRepository(config, db)
+			s := services.NewBlockService(r, user)
+			c.Set("Service", s)
+			return handler(c)
+		}
+	})
 	g.GET("/", GetBrockByIDHandler)
 	g.POST("/", CreateBrockChildrenHandler)
 }
 
 func GetBrockByIDHandler(c echo.Context) error {
-	//この辺りはユーザー情報に紐づけるデータベースを作成しておいて、そこからどれを使うか選択できるようにしておく
-	testKey := "secret_sJNm41y3NfWLd59bUvSeyYXlxKL4VmwvpYgHikItzhB"
-	client := notion.NewClient(testKey)
-	query := new(notion.PaginationQuery)
-	block, err := client.FindBlockChildrenByID(context.Background(), "b8643af68f9340438e99b30f4586a332", query)
-	if err != nil {
-		return err
+	service := c.Get("Service").(services.BlockService)
+	var params struct{
+		SecretKey string
+		ParentBlockID string
 	}
-	return c.JSON(http.StatusOK, block)
-
+	if err := c.Bind(&params); err != nil {
+		return errors.New("送られた情報を取得できませんでした")
+	}
+	data,err := service.GetChildren(params.SecretKey,params.ParentBlockID)
+	if err != nil {
+		return errors.New("ブロックの取得に失敗しました")
+	}
+	return c.JSON(http.StatusOK, data)
+	
 }
 
 func CreateBrockChildrenHandler(c echo.Context) error {
-	testKey := "secret_sJNm41y3NfWLd59bUvSeyYXlxKL4VmwvpYgHikItzhB"
-	// 	//データベースに紐づく値を入れる(状態管理でログイン時に持っておきたい情報)
-	client := notion.NewClient(testKey)
-
-	childText := new(notion.Text)
-	childText.Content = "test"
-
-	parentText := new(notion.RichText)
-	parentText.Type = "text"
-	parentText.Text = childText
-
-	textBlock := new(notion.RichTextBlock)
-	textBlock.Text = []notion.RichText{*parentText}
-
-	block := new(notion.Block)
-	block.Object = "block"
-	block.Type = "paragraph"
-	block.Paragraph = textBlock
-	res, err := client.AppendBlockChildren(context.Background(), "349f28e31be94105b461ccde34cd6496", []notion.Block{*block})
+	service := c.Get("Service").(services.BlockService)
+	var params struct{
+		SecretKey string
+		ParentBlockID string
+		MyBlock models.MyBlock
+	}
+	if err := c.Bind(&params); err != nil {
+		return errors.New("送られた情報を取得できませんでした")
+	}
+	//dataなど何が帰ってくるかわからない
+	data,err := service.AddChild(params.SecretKey,params.ParentBlockID,params.MyBlock)
 	if err != nil {
-		//一回成功メッセージ出した方が良さげ(本当はもしミスがあったら直したい)
 		return err
 	}
-	// 自分のデータベースに保存する
-	myBlock := new(models.MyBlock)
-	myBlock.Block = res
-	myBlock.DisplayTime = time.Now()
-
-	db := c.Get("Tx").(*gorm.DB)
-	result := db.Create(myBlock)
-
-	return c.JSON(http.StatusOK, result)
-
+	return c.JSON(http.StatusOK,data)
 }
