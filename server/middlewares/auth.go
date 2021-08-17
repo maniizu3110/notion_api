@@ -50,7 +50,7 @@ func AuthMiddleware(tokenMaker util.Maker) echo.MiddlewareFunc {
 			}
 			user := util.SetUser(payload)
 			//idとuserにしか値が入っていないことに注意
-			c.Set("user",user)
+			c.Set("user", user)
 			// return c.JSON(http.StatusOK,user)
 			return next(c)
 		}

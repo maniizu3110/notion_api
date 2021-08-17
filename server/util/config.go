@@ -21,6 +21,7 @@ type Config struct {
 	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	DatabaseKey         string        `mapstructure:"DATABASE_KEY"`
 	ConfigKey           string        `mapstructure:"CONFIG_KEY"`
+	Environment         string        `mapstructure:"ENVIRONMENT"`
 }
 
 // LoadConfig reads configuration from file or environment variables.
