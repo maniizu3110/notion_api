@@ -3,12 +3,12 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"server/api/notion"
 	"server/controller/repositories"
 	"server/controller/services"
 	"server/models"
 	"server/util"
 
-	"github.com/dstotijn/go-notion"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 )

@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 	"net/http"
+	"server/api/notion"
 
-	"github.com/dstotijn/go-notion"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 )
