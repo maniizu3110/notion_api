@@ -8,6 +8,7 @@ import (
 	"server/models"
 	"server/util"
 
+	"github.com/dstotijn/go-notion"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 )
@@ -51,13 +52,12 @@ func CreateBlockChildrenHandler(c echo.Context) error {
 	var params struct {
 		SecretKey     string
 		ParentBlockID string
-		MyBlocks      []models.MyBlock
+		Blocks      []notion.Block
 	}
 	if err := c.Bind(&params); err != nil {
 		return errors.New("送られた情報を取得できませんでした")
 	}
-	return c.JSON(http.StatusOK, params)
-	block, err := service.AddChild(params.SecretKey, params.ParentBlockID, params.MyBlocks)
+	block, err := service.AddChild(params.SecretKey, params.ParentBlockID, params.Blocks)
 	if err != nil {
 		return err
 	}

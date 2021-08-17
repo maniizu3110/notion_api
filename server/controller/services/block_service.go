@@ -12,7 +12,7 @@ type BlockRepository interface {
 }
 
 type BlockService interface {
-	AddChild(key string, blockID string, myBlock []models.MyBlock) (notion.Block, error)
+	AddChild(key string, blockID string, myBlocks []notion.Block) (notion.Block, error)
 	GetChildren(key string, blockID string) (notion.BlockChildrenResponse, error)
 }
 
@@ -29,27 +29,13 @@ func NewBlockService(repo BlockRepository, user *models.User) BlockService {
 	return res
 }
 
-func (u *blockServiceImpl) AddChild(key string, blockID string, myBlock []models.MyBlock) (notion.Block, error) {
+func (u *blockServiceImpl) AddChild(key string, blockID string, blocks []notion.Block) (notion.Block, error) {
 	client := notion.NewClient(key)
-	//自分のデータベースに保存する処理の追加(最初に追加してその後notionAPIに合わせた方がロールバックしやすい)
-
-	childText := new(notion.Text)
-	childText.Content = "test"
-	parentText := new(notion.RichText)
-	parentText.Type = "text"
-	parentText.Text = childText
-
-	textBlock := new(notion.RichTextBlock)
-	textBlock.Text = []notion.RichText{*parentText}
-
-	block := new(notion.Block)
-	block.Object = "block"
-	block.Type = "paragraph"
-	block.Paragraph = textBlock
-	res, err := client.AppendBlockChildren(context.Background(), blockID, []notion.Block{*block})
+	res, err := client.AppendBlockChildren(context.Background(), blockID, blocks)
 	if err != nil {
 		return notion.Block{}, err
 	}
+	
 	return res, nil
 	// 自分のデータベースに保存する
 	// myBlock := new(models.MyBlock)
@@ -77,29 +63,3 @@ func (u *blockServiceImpl) GetChildren(key string, blockID string) (notion.Block
 	return block, nil
 }
 
-// {
-// 	"children": [
-// 		{
-// 			"object": "block",
-// 			"type": "heading_2",
-// 			"heading_2": {
-// 				"text": [{ "type": "text", "text": { "content": "Lacinato kale" } }]
-// 			}
-// 		},
-// 		{
-// 			"object": "block",
-// 			"type": "paragraph",
-// 			"paragraph": {
-// 				"text": [
-// 					{
-// 						"type": "text",
-// 						"text": {
-// 							"content": "Lacinato kale is a variety of kale with a long tradition in Italian cuisine, especially that of Tuscany. It is also known as Tuscan kale, Italian kale, dinosaur kale, kale, flat back kale, palm tree kale, or black Tuscan palm.",
-// 							"link": { "url": "https://en.wikipedia.org/wiki/Lacinato_kale" }
-// 						}
-// 					}
-// 				]
-// 			}
-// 		}
-// 	]
-// }
