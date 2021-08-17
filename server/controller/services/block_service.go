@@ -12,7 +12,7 @@ type BlockRepository interface {
 }
 
 type BlockService interface {
-	AddChild(key string, blockID string, myBlocks []notion.Block) (notion.Block, error)
+	AddChild(key string, blockID string, blocks []notion.Block) (notion.Block, error)
 	GetChildren(key string, blockID string) (notion.BlockChildrenResponse, error)
 }
 
@@ -31,23 +31,12 @@ func NewBlockService(repo BlockRepository, user *models.User) BlockService {
 
 func (u *blockServiceImpl) AddChild(key string, blockID string, blocks []notion.Block) (notion.Block, error) {
 	client := notion.NewClient(key)
-	res, err := client.AppendBlockChildren(context.Background(), blockID, blocks)
+	parentBlock, err := client.AppendBlockChildren(context.Background(), blockID, blocks)
+
 	if err != nil {
 		return notion.Block{}, err
 	}
-	
-	return res, nil
-	// 自分のデータベースに保存する
-	// myBlock := new(models.MyBlock)
-	// myBlock.Block = res
-	// myBlock.DisplayTime = time.Now()
-
-	// db := c.Get("Tx").(*gorm.DB)
-	// result := db.Create(myBlock)
-
-	// return c.JSON(http.StatusOK, result)
-
-	// return new(models.MyBlock), nil
+	return parentBlock, nil
 }
 func (u *blockServiceImpl) GetChildren(key string, blockID string) (notion.BlockChildrenResponse, error) {
 	client := notion.NewClient(key)

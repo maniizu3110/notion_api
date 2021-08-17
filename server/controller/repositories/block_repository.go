@@ -24,7 +24,7 @@ func NewBlockRepository(config util.Config, db *gorm.DB) services.BlockRepositor
 
 func (u *blockRepositoryImpl) AddChild(data *models.MyBlock) (*models.MyBlock, error) {
 	if err := u.db.Create(data).Error; err != nil {
-		return nil, errors.New("ユーザーの作成に失敗しました")
+		return nil, errors.New("ブロックの追加に失敗しました")
 	}
 	return data, nil
 }
