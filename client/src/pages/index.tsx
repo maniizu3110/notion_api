@@ -5,7 +5,7 @@ import {
   increment,
   incrementByAmount,
   selectCount,
-} from "../features/counter/counterSlice";
+} from "../features/counter";
 
 const IndexPage: React.FC = () => {
   const dispatch = useAppDispatch();
