@@ -1,9 +1,8 @@
 package models
 
 import (
+	"server/api/notion"
 	"time"
-
-	"github.com/dstotijn/go-notion"
 )
 
 type MyBlock struct {

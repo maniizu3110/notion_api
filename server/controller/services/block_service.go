@@ -2,9 +2,8 @@ package services
 
 import (
 	"context"
+	"server/api/notion"
 	"server/models"
-
-	"github.com/dstotijn/go-notion"
 )
 
 type BlockRepository interface {
