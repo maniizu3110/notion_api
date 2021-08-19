@@ -6,9 +6,7 @@ import (
 )
 
 type MyBlock struct {
-	Model
 	notion.Block
-	//カスタムで表示する時間
 	DisplayTime time.Time
 }
 
