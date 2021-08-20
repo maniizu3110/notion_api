@@ -9,6 +9,7 @@ type MyBlock struct {
 	notion.Block
 	DisplayTime time.Time
 	UserID      uint
+	MyRichTextBlock MyRichTextBlock
 }
 
 type AddChildBlockResponse struct {
