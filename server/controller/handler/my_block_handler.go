@@ -28,8 +28,8 @@ func AssignMyBlockHandlers(g *echo.Group) {
 		}
 	})
 	g.POST("/", GetAndCreateMyBlockChildrenHandler)
-	g.GET("/", GetChildrenByIDHandler)
-	g.GET("/", GetAllBlockHandler)
+	g.GET("/:id", GetMyBlockByIDHandler)
+	g.GET("/", GetAllMyBlockHandler)
 }
 
 func GetAndCreateMyBlockChildrenHandler(c echo.Context)error{
@@ -47,7 +47,7 @@ func GetAndCreateMyBlockChildrenHandler(c echo.Context)error{
 	}
 	return c.JSON(http.StatusOK, data)
 }
-func GetAllBlockHandler(c echo.Context)error{
+func GetAllMyBlockHandler(c echo.Context)error{
 	service := c.Get("Service").(services.MyBlockService)
 	blocks, err := service.GetAllBlocks()
 	if err != nil {
@@ -55,15 +55,10 @@ func GetAllBlockHandler(c echo.Context)error{
 	}
 	return c.JSON(http.StatusOK, blocks)
 }
-func GetChildrenByIDHandler(c echo.Context)error{
+func GetMyBlockByIDHandler(c echo.Context)error{
 	service := c.Get("Service").(services.MyBlockService)
-	var params struct {
-		ParentBlockID string
-	}
-	if err := c.Bind(&params); err != nil {
-		return errors.New("送られた情報を取得できませんでした")
-	}
-	blocks, err := service.GetChildrenByID(params.ParentBlockID)
+	blockID := c.Param("id")
+	blocks, err := service.GetChildrenByID(blockID)
 	if err != nil {
 		return errors.New("ブロックの取得に失敗しました")
 	}
