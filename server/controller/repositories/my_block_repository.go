@@ -40,6 +40,7 @@ func (u *myBlockRepositoryImpl) GetAllBlocks() ([]models.MyBlock, error) {
 
 func (u *myBlockRepositoryImpl) GetBlockByID(blockID string) (*models.MyBlock, error) {
 	block := new(models.MyBlock)
+	//TODO:preloadできていないので要修正
 	if err := u.db.Preload("MyRichTextBlock").Where("id = ?", blockID).First(block).Error; err != nil {
 		return nil, errors.New("ブロックの取得に失敗しました")
 	}
