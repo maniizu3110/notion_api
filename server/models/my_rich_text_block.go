@@ -7,6 +7,7 @@ type MyRichTextBlock struct {
 	Model
 	BlockID string
 	notion.RichTextBlock
+	MyRichText MyRichText
 }
 
 func ChangeToMyRichTextBlock(richTextBlock *notion.RichTextBlock,blockID string)(*MyRichTextBlock){
