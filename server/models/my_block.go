@@ -8,6 +8,7 @@ import (
 type MyBlock struct {
 	notion.Block
 	DisplayTime time.Time
+	UserID uint
 }
 
 type AddChildBlockResponse struct{
@@ -16,9 +17,10 @@ type AddChildBlockResponse struct{
 	RegisteredMyNotionBlocks []MyBlock 
 }
 
-func ChangeToMyBlock(block notion.Block)(*MyBlock){
+func ChangeToMyBlock(block notion.Block,user *User)(*MyBlock){
 	myblock := new(MyBlock)
 	myblock.Block = block
 	myblock.DisplayTime = time.Now()
+	myblock.UserID = user.ID
 	return myblock
 }

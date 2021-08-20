@@ -1,24 +1,27 @@
 package services
 
 import (
+	"fmt"
 	"server/models"
 )
 
 type MyBlockRepository interface {
 	AddChild(data *models.MyBlock) (*models.MyBlock, error)
+	GetAllBlocks() ([]models.MyBlock, error)
 }
 
 type MyBlockService interface {
 	GetAndCreateChildren(key string, blockID string) ([]models.MyBlock, error)
+	GetAllBlocks() ([]models.MyBlock, error)
 }
 
 type myBlockServiceImpl struct {
 	user *models.User
-	repo BlockRepository
+	repo MyBlockRepository
 	blockService BlockService
 }
 
-func NewMyBlockService(repo BlockRepository, user *models.User, blockService BlockService) MyBlockService {
+func NewMyBlockService(repo MyBlockRepository, user *models.User, blockService BlockService) MyBlockService {
 	res := &myBlockServiceImpl{
 		user: user,
 		repo: repo,
@@ -35,7 +38,7 @@ func (u *myBlockServiceImpl) GetAndCreateChildren(key string, blockID string) ([
 	registerdBlocks := []models.MyBlock{}
 	blocks := getBlockRes.Results
 	for _,block:=range blocks{
-		myblock := models.ChangeToMyBlock(block)
+		myblock := models.ChangeToMyBlock(block,u.user)
 		//TODO:途中でエラーが起こった時にどうするか（ロールバックできるようにしたい）
 		newblock,_ := u.repo.AddChild(myblock)
 		//TODO:複数回処理するのでエラーハンドリングスキップしているがやるべき
@@ -43,4 +46,10 @@ func (u *myBlockServiceImpl) GetAndCreateChildren(key string, blockID string) ([
 	}
 	return registerdBlocks,nil
 }
-
+func(u *myBlockServiceImpl)GetAllBlocks() ([]models.MyBlock, error){
+	blocks,err := u.repo.GetAllBlocks()
+	if err != nil {
+		return nil,err
+	}
+	return blocks,nil
+}
