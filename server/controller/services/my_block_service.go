@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"server/models"
 )
 
