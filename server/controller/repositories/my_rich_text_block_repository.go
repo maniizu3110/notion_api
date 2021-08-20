@@ -18,7 +18,7 @@ func NewMyRichTextBlockRepository(config util.Config, db *gorm.DB, userID uint) 
 	res := &myRichTextBlockRepositoryImpl{
 		config: config,
 		//TODO:ユーザー指定しておくべきか検討
-		db:     db,
+		db: db,
 	}
 	return res
 }
@@ -29,10 +29,9 @@ func (u *myRichTextBlockRepositoryImpl) Create(data *models.MyRichTextBlock) (*m
 	}
 	return data, nil
 }
-func (u *myRichTextBlockRepositoryImpl) GetRichTextBlockByBlockID(blockID string) (*models.MyRichTextBlock, error){
+func (u *myRichTextBlockRepositoryImpl) GetRichTextBlockByBlockID(blockID string) (*models.MyRichTextBlock, error) {
 	myRichTextBlock := new(models.MyRichTextBlock)
-	if err := u.db.Where(" block_id = ? ",blockID).Find(myRichTextBlock).Error; err != nil {
-	// if err := u.db.Joins("MyRichText").Where(" block_id = ? ",blockID).Find(myRichTextBlock).Error; err != nil {
+	if err := u.db.Preload("MyRichText").Where(" block_id = ? ", blockID).Find(myRichTextBlock).Error; err != nil {
 		return nil, errors.New("ブロックの追加に失敗しました")
 	}
 	return myRichTextBlock, nil

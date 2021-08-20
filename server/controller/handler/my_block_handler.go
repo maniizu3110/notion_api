@@ -18,11 +18,11 @@ func AssignMyBlockHandlers(g *echo.Group) {
 			config := c.Get("Ck").(util.Config)
 			db := c.Get(config.DatabaseKey).(*gorm.DB)
 			user := c.Get("user").(*models.MyUser)
-			r := repositories.NewMyBlockRepository(config, db,user.ID)
-			bs := services.NewBlockService(r,user)
-			rr := repositories.NewMyRichTextBlockRepository(config,db,user.ID)
-			rtr := repositories.NewMyRichTextRepository(config,db,user.ID)
-			s := services.NewMyBlockService(r, user,bs,rr,rtr)
+			r := repositories.NewMyBlockRepository(config, db, user.ID)
+			bs := services.NewBlockService(r, user)
+			rr := repositories.NewMyRichTextBlockRepository(config, db, user.ID)
+			rtr := repositories.NewMyRichTextRepository(config, db, user.ID)
+			s := services.NewMyBlockService(r, user, bs, rr, rtr)
 			c.Set("Service", s)
 			return handler(c)
 		}
@@ -32,7 +32,7 @@ func AssignMyBlockHandlers(g *echo.Group) {
 	g.GET("/", GetAllMyBlockHandler)
 }
 
-func GetAndCreateMyBlockChildrenHandler(c echo.Context)error{
+func GetAndCreateMyBlockChildrenHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
 	var params struct {
 		SecretKey     string
@@ -47,7 +47,7 @@ func GetAndCreateMyBlockChildrenHandler(c echo.Context)error{
 	}
 	return c.JSON(http.StatusOK, data)
 }
-func GetAllMyBlockHandler(c echo.Context)error{
+func GetAllMyBlockHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
 	blocks, err := service.GetAllBlocks()
 	if err != nil {
@@ -55,7 +55,7 @@ func GetAllMyBlockHandler(c echo.Context)error{
 	}
 	return c.JSON(http.StatusOK, blocks)
 }
-func GetMyBlockByIDHandler(c echo.Context)error{
+func GetMyBlockByIDHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
 	blockID := c.Param("id")
 	blocks, err := service.GetChildrenByID(blockID)

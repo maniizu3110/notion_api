@@ -18,7 +18,7 @@ func NewMyBlockRepository(config util.Config, db *gorm.DB, userID uint) services
 	res := &myBlockRepositoryImpl{
 		config: config,
 		//userIDを指定したいのであればそのモデルにはuserIDが必要
-		db:     db.Where("user_id = ?", userID),
+		db: db.Where("user_id = ?", userID),
 	}
 	return res
 }
@@ -40,9 +40,8 @@ func (u *myBlockRepositoryImpl) GetAllBlocks() ([]models.MyBlock, error) {
 
 func (u *myBlockRepositoryImpl) GetBlockByID(blockID string) (*models.MyBlock, error) {
 	block := new(models.MyBlock)
-	if err := u.db.Where("id = ?",blockID).Find(block).Error; err != nil {
+	if err := u.db.Where("id = ?", blockID).Find(block).Error; err != nil {
 		return nil, errors.New("ブロックの取得に失敗しました")
 	}
 	return block, nil
 }
-

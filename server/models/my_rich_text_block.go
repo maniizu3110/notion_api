@@ -1,16 +1,18 @@
 package models
 
-import "server/api/notion"
-
+import (
+	"github.com/jinzhu/gorm"
+	"server/api/notion"
+)
 
 type MyRichTextBlock struct {
-	Model
+	gorm.Model
 	BlockID string
 	notion.RichTextBlock
 	MyRichText MyRichText
 }
 
-func ChangeToMyRichTextBlock(richTextBlock *notion.RichTextBlock,blockID string)(*MyRichTextBlock){
+func ChangeToMyRichTextBlock(richTextBlock *notion.RichTextBlock, blockID string) *MyRichTextBlock {
 	newMyRichTextBlock := new(MyRichTextBlock)
 	newMyRichTextBlock.RichTextBlock = *richTextBlock
 	newMyRichTextBlock.BlockID = blockID

@@ -12,6 +12,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 )
+
 func AssignBlockHandlers(g *echo.Group) {
 	g = g.Group("", func(handler echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -51,7 +52,7 @@ func CreateBlockChildrenHandler(c echo.Context) error {
 	var params struct {
 		SecretKey     string
 		ParentBlockID string
-		Blocks      []notion.Block
+		Blocks        []notion.Block
 	}
 	if err := c.Bind(&params); err != nil {
 		return errors.New("送られた情報を取得できませんでした")

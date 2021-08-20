@@ -49,4 +49,3 @@ func (u *blockServiceImpl) GetChildren(key string, blockID string) (notion.Block
 
 	return block, nil
 }
-
