@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"server/models"
 )
 
@@ -42,10 +43,16 @@ func (u *myBlockServiceImpl) GetAndCreateChildren(key string, blockID string) ([
 
 		myblock := models.ChangeToMyBlock(block,u.user)
 		//TODO:途中でエラーが起こった時にどうするか（ロールバックできるようにしたい）
+		//idが被ったものはpanicではなくで無視する（重複している時はログに出力する）
 		newblock,_ := u.repo.AddChild(myblock)
+		//Typeで条件分岐にする
 		if newblock.Paragraph != nil {
-			newMyRichTextBlock := models.ChangeToMyRichTextBlock(newblock.Paragraph,newblock.ID)
-			u.richTextBlockRepo.Create(newMyRichTextBlock)
+			myRichTextBlock := models.ChangeToMyRichTextBlock(newblock.Paragraph,newblock.ID)
+			richTextblock,err := u.richTextBlockRepo.Create(myRichTextBlock)
+			if err != nil {
+				return nil,err
+			}
+			fmt.Printf("%+v",richTextblock)
 		}
 		//TODO:複数回処理するのでエラーハンドリングスキップしているがやるべき
 		registerdBlocks = append(registerdBlocks, *newblock)

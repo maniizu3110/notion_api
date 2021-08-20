@@ -4,6 +4,7 @@ import "server/api/notion"
 
 
 type MyRichTextBlock struct {
+	Model
 	BlockID string
 	notion.RichTextBlock
 }
