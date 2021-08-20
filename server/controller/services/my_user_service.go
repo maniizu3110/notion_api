@@ -6,25 +6,25 @@ import (
 	"server/util"
 )
 
-type UserRepository interface {
-	Create(data *models.User) (*models.User, error)
-	SearchByUserName(username string) ([]models.User, error)
+type MyUserRepository interface {
+	Create(data *models.MyUser) (*models.MyUser, error)
+	SearchByUserName(username string) ([]models.MyUser, error)
 }
 
-type UserService interface {
-	Create(data *models.User) (*models.User, error)
-	Login(data *models.User) (*models.LoginUserResponse, error)
-	SearchByUserName(username string, password string) ([]models.User, error)
+type MyUserService interface {
+	Create(data *models.MyUser) (*models.MyUser, error)
+	Login(data *models.MyUser) (*models.LoginUserResponse, error)
+	SearchByUserName(username string, password string) ([]models.MyUser, error)
 }
 
-type userServiceImpl struct {
+type myUserServiceImpl struct {
 	config     util.Config
-	repo       UserRepository
+	repo       MyUserRepository
 	tokenMaker util.Maker
 }
 
-func NewUserService(repo UserRepository, config util.Config, tokenMaker util.Maker) UserService {
-	res := &userServiceImpl{
+func NewMyUserService(repo MyUserRepository, config util.Config, tokenMaker util.Maker) MyUserService {
+	res := &myUserServiceImpl{
 		config:     config,
 		repo:       repo,
 		tokenMaker: tokenMaker,
@@ -32,7 +32,7 @@ func NewUserService(repo UserRepository, config util.Config, tokenMaker util.Mak
 	return res
 }
 
-func (u *userServiceImpl) Create(data *models.User) (*models.User, error) {
+func (u *myUserServiceImpl) Create(data *models.MyUser) (*models.MyUser, error) {
 	//naked passowrd in this point
 	password := data.HashedPassword
 	hashedPassword, err := util.HashPassword(password)
@@ -47,7 +47,7 @@ func (u *userServiceImpl) Create(data *models.User) (*models.User, error) {
 	}
 	return newData, nil
 }
-func (u *userServiceImpl) SearchByUserName(username string, password string) ([]models.User, error) {
+func (u *myUserServiceImpl) SearchByUserName(username string, password string) ([]models.MyUser, error) {
 	users, err := u.repo.SearchByUserName(username)
 	if err != nil {
 		return nil, errors.New("ユーザー名での検索に失敗しました")
@@ -57,7 +57,7 @@ func (u *userServiceImpl) SearchByUserName(username string, password string) ([]
 
 //TODO:実装大きすぎるので区切る
 //TODO:同じ名前で登録できないようにバリデーションを修正する
-func (u *userServiceImpl) Login(inputData *models.User) (*models.LoginUserResponse, error) {
+func (u *myUserServiceImpl) Login(inputData *models.MyUser) (*models.LoginUserResponse, error) {
 	users, err := u.repo.SearchByUserName(inputData.User)
 	if err != nil {
 		return nil, errors.New("ユーザー名での検索に失敗しました")

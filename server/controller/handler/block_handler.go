@@ -17,7 +17,7 @@ func AssignBlockHandlers(g *echo.Group) {
 		return func(c echo.Context) error {
 			config := c.Get("Ck").(util.Config)
 			db := c.Get(config.DatabaseKey).(*gorm.DB)
-			user := c.Get("user").(*models.User)
+			user := c.Get("user").(*models.MyUser)
 			r := repositories.NewBlockRepository(config, db)
 			s := services.NewBlockService(r, user)
 			c.Set("Service", s)

@@ -18,8 +18,8 @@ func AssignUserHandlers(g *echo.Group) {
 			config := c.Get("Ck").(util.Config)
 			tokenMaker := c.Get("Tk").(util.Maker)
 			db := c.Get(config.DatabaseKey).(*gorm.DB)
-			r := repositories.NewUserRepository(config, db)
-			s := services.NewUserService(r, config, tokenMaker)
+			r := repositories.NewMyUserRepository(config, db)
+			s := services.NewMyUserService(r, config, tokenMaker)
 			c.Set("Service", s)
 			return handler(c)
 		}
@@ -31,8 +31,8 @@ func AssignUserHandlers(g *echo.Group) {
 //TODO:同じ名前のユーザーを登録することはできない
 //TODO:Createした後にもログイン処理をする
 func CreateUserHandler(c echo.Context) error {
-	service := c.Get("Service").(services.UserService)
-	user := new(models.User)
+	service := c.Get("Service").(services.MyUserService)
+	user := new(models.MyUser)
 	err := c.Bind(user)
 	if err != nil {
 		return err
@@ -45,8 +45,8 @@ func CreateUserHandler(c echo.Context) error {
 }
 
 func LoginUserHandler(c echo.Context) error {
-	service := c.Get("Service").(services.UserService)
-	inputedUser := new(models.User)
+	service := c.Get("Service").(services.MyUserService)
+	inputedUser := new(models.MyUser)
 	err := c.Bind(inputedUser)
 	if err != nil {
 		return errors.New("ログイン情報の取得に失敗しました")

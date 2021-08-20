@@ -15,12 +15,12 @@ type MyBlockService interface {
 }
 
 type myBlockServiceImpl struct {
-	user *models.User
+	user *models.MyUser
 	repo MyBlockRepository
 	blockService BlockService
 }
 
-func NewMyBlockService(repo MyBlockRepository, user *models.User, blockService BlockService) MyBlockService {
+func NewMyBlockService(repo MyBlockRepository, user *models.MyUser, blockService BlockService) MyBlockService {
 	res := &myBlockServiceImpl{
 		user: user,
 		repo: repo,
