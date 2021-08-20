@@ -21,6 +21,7 @@ func InitRouter(serverConf *Server) {
 	{
 		g := e.Group("/api/v1", middlewares.SetConf(serverConf.config, serverConf.db),middlewares.AuthMiddleware(serverConf.tokenMaker))
 		handler.AssignNotionDatabaseHandlers(g.Group("/databases")) // auth ok
+		handler.AssignMyBlockHandlers(g.Group("/myblock"))
 		handler.AssignBlockHandlers(g.Group("/block"))
 	}
 	e.Debug = true
