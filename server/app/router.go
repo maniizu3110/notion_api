@@ -23,6 +23,8 @@ func InitRouter(serverConf *Server) {
 		handler.AssignNotionDatabaseHandlers(g.Group("/databases")) // auth ok
 		handler.AssignMyBlockHandlers(g.Group("/myblock"))
 		handler.AssignBlockHandlers(g.Group("/block"))
+		handler.AssignMyRichTextBlockHandlers(g.Group("/my-rich-text-block"))
+
 	}
 	e.Debug = true
 	e.Logger.Fatal(e.Start(serverConf.config.ServerAddress))

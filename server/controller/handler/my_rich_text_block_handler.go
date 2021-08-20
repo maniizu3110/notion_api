@@ -30,6 +30,7 @@ func AssignMyRichTextBlockHandlers(g *echo.Group) {
 func GetMyRichTextBlockByBlockIDHandler(c echo.Context) error{
 	service := c.Get("Service").(services.MyRichTextBlockService)
 	blockID := c.Param("id")
+	
 	blocks, err := service.GetRichTextBlockByBlockID(blockID)
 	if err != nil {
 		return errors.New("RichTextBlockの取得に失敗しました")
