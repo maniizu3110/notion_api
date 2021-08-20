@@ -7,14 +7,14 @@ import (
 
 type MyRichTextBlock struct {
 	gorm.Model
-	BlockID string
+	MyBlockID string
 	notion.RichTextBlock
-	MyRichText MyRichText
+	MyRichText MyRichText 
 }
 
 func ChangeToMyRichTextBlock(richTextBlock *notion.RichTextBlock, blockID string) *MyRichTextBlock {
 	newMyRichTextBlock := new(MyRichTextBlock)
 	newMyRichTextBlock.RichTextBlock = *richTextBlock
-	newMyRichTextBlock.BlockID = blockID
+	newMyRichTextBlock.MyBlockID = blockID
 	return newMyRichTextBlock
 }

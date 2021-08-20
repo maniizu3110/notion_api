@@ -9,7 +9,7 @@ type MyBlock struct {
 	notion.Block
 	DisplayTime time.Time
 	UserID      uint
-	MyRichTextBlock MyRichTextBlock
+	MyRichTextBlock MyRichTextBlock `gorm:"foreignKey:MyBlockID"`
 }
 
 type AddChildBlockResponse struct {
