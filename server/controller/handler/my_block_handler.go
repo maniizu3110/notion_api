@@ -21,7 +21,8 @@ func AssignMyBlockHandlers(g *echo.Group) {
 			r := repositories.NewMyBlockRepository(config, db,user.ID)
 			bs := services.NewBlockService(r,user)
 			rr := repositories.NewMyRichTextBlockRepository(config,db,user.ID)
-			s := services.NewMyBlockService(r, user,bs,rr)
+			rtr := repositories.NewMyRichTextRepository(config,db,user.ID)
+			s := services.NewMyBlockService(r, user,bs,rr,rtr)
 			c.Set("Service", s)
 			return handler(c)
 		}

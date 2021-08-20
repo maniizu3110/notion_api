@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
 	"server/controller/services"
 	"server/models"
 	"server/util"
@@ -18,13 +17,13 @@ type myRichTextBlockRepositoryImpl struct {
 func NewMyRichTextBlockRepository(config util.Config, db *gorm.DB, userID uint) services.MyRichTextBlockRepository {
 	res := &myRichTextBlockRepositoryImpl{
 		config: config,
+		//TODO:ユーザー指定しておくべきか検討
 		db:     db,
 	}
 	return res
 }
 
 func (u *myRichTextBlockRepositoryImpl) Create(data *models.MyRichTextBlock) (*models.MyRichTextBlock, error) {
-	fmt.Printf("%+v",data)
 	if err := u.db.Create(data).Error; err != nil {
 		return nil, errors.New("ブロックの追加に失敗しました")
 	}

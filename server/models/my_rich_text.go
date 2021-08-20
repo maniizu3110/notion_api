@@ -6,13 +6,13 @@ import "server/api/notion"
 
 type MyRichText struct {
 	Model
-	RichTextBlockID string
+	RichTextBlockID uint
 	notion.RichText
 }
 
-func ChangeToMyRichText(richText *notion.RichText,blockID string)(*MyRichText){
+func ChangeToMyRichText(richText notion.RichText,blockID uint)(*MyRichText){
 	newMyRichText := new(MyRichText)
-	newMyRichText.RichText = *richText
+	newMyRichText.RichText = richText
 	newMyRichText.RichTextBlockID = blockID
 	return newMyRichText
 }
