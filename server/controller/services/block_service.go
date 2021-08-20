@@ -16,11 +16,11 @@ type BlockService interface {
 }
 
 type blockServiceImpl struct {
-	user *models.User
+	user *models.MyUser
 	repo BlockRepository
 }
 
-func NewBlockService(repo BlockRepository, user *models.User) BlockService {
+func NewBlockService(repo BlockRepository, user *models.MyUser) BlockService {
 	res := &blockServiceImpl{
 		user: user,
 		repo: repo,
@@ -31,7 +31,6 @@ func NewBlockService(repo BlockRepository, user *models.User) BlockService {
 func (u *blockServiceImpl) AddChild(key string, blockID string, blocks []notion.Block) (notion.Block, error) {
 	client := notion.NewClient(key)
 	parentBlock, err := client.AppendBlockChildren(context.Background(), blockID, blocks)
-
 	if err != nil {
 		return notion.Block{}, err
 	}

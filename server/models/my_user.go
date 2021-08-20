@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type User struct {
+type MyUser struct {
 	gorm.Model
 	User           string `json:"user" gorm:"unique not null"`
 	HashedPassword string `json:"-" validate:"min=6"`
@@ -30,7 +30,7 @@ type UserResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (u *User) NewUserResponse() UserResponse {
+func (u *MyUser) NewUserResponse() UserResponse {
 	return UserResponse{
 		User:      u.User,
 		CreatedAt: u.CreatedAt,

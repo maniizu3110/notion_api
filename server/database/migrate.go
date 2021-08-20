@@ -1,11 +1,14 @@
 package database
 
 import (
-	"github.com/jinzhu/gorm"
 	"server/models"
+
+	"github.com/jinzhu/gorm"
 )
 
 func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&models.MyBlock{})
-	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.MyUser{})
+	db.AutoMigrate(&models.MyRichTextBlock{})
+	db.AutoMigrate(&models.MyRichText{})
 }

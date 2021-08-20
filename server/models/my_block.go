@@ -17,7 +17,7 @@ type AddChildBlockResponse struct{
 	RegisteredMyNotionBlocks []MyBlock 
 }
 
-func ChangeToMyBlock(block notion.Block,user *User)(*MyBlock){
+func ChangeToMyBlock(block notion.Block,user *MyUser)(*MyBlock){
 	myblock := new(MyBlock)
 	myblock.Block = block
 	myblock.DisplayTime = time.Now()
