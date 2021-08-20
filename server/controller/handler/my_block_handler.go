@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"server/controller/repositories"
 	"server/controller/services"
@@ -18,15 +19,15 @@ func AssignMyBlockHandlers(g *echo.Group) {
 			config := c.Get("Ck").(util.Config)
 			db := c.Get(config.DatabaseKey).(*gorm.DB)
 			user := c.Get("user").(*models.User)
-			r := repositories.NewMyBlockRepository(config, db)
-			br := repositories.NewMyBlockRepository(config, db)
-			bs := services.NewBlockService(br,user)
+			r := repositories.NewMyBlockRepository(config, db,user.ID)
+			bs := services.NewBlockService(r,user)
 			s := services.NewMyBlockService(r, user,bs)
 			c.Set("Service", s)
 			return handler(c)
 		}
 	})
 	g.POST("/", GetAndCreateMyBlockChildrenHandler)
+	g.GET("/", GetAllBlockHandler)
 }
 
 func GetAndCreateMyBlockChildrenHandler(c echo.Context)error{
@@ -43,4 +44,12 @@ func GetAndCreateMyBlockChildrenHandler(c echo.Context)error{
 		return errors.New("ブロックの取得に失敗しました")
 	}
 	return c.JSON(http.StatusOK, data)
+}
+func GetAllBlockHandler(c echo.Context)error{
+	service := c.Get("Service").(services.MyBlockService)
+	blocks, err := service.GetAllBlocks()
+	if err != nil {
+		return errors.New("ブロックの取得に失敗しました")
+	}
+	return c.JSON(http.StatusOK, blocks)
 }

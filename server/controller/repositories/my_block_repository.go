@@ -14,10 +14,10 @@ type myBlockRepositoryImpl struct {
 	db     *gorm.DB
 }
 
-func NewMyBlockRepository(config util.Config, db *gorm.DB) services.BlockRepository {
-	res := &blockRepositoryImpl{
+func NewMyBlockRepository(config util.Config, db *gorm.DB, userID uint) services.MyBlockRepository {
+	res := &myBlockRepositoryImpl{
 		config: config,
-		db:     db,
+		db:     db.Where("user_id = ?", userID),
 	}
 	return res
 }
@@ -27,4 +27,12 @@ func (u *myBlockRepositoryImpl) AddChild(data *models.MyBlock) (*models.MyBlock,
 		return nil, errors.New("ブロックの追加に失敗しました")
 	}
 	return data, nil
+}
+
+func (u *myBlockRepositoryImpl) GetAllBlocks() ([]models.MyBlock, error) {
+	var blocks []models.MyBlock
+	if err := u.db.Find(&blocks).Error; err != nil {
+		return nil, errors.New("ブロックの取得に失敗しました")
+	}
+	return blocks, nil
 }
