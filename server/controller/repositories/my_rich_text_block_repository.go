@@ -29,3 +29,10 @@ func (u *myRichTextBlockRepositoryImpl) Create(data *models.MyRichTextBlock) (*m
 	}
 	return data, nil
 }
+func (u *myRichTextBlockRepositoryImpl) GetRichTextBlockByBlockID(blockID string) (*models.MyRichTextBlock, error){
+	myRichTextBlock := new(models.MyRichTextBlock)
+	if err := u.db.Where(" block_id = ? ",blockID).Find(myRichTextBlock).Error; err != nil {
+		return nil, errors.New("ブロックの追加に失敗しました")
+	}
+	return myRichTextBlock, nil
+}
