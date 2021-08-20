@@ -31,7 +31,6 @@ func NewBlockService(repo BlockRepository, user *models.MyUser) BlockService {
 func (u *blockServiceImpl) AddChild(key string, blockID string, blocks []notion.Block) (notion.Block, error) {
 	client := notion.NewClient(key)
 	parentBlock, err := client.AppendBlockChildren(context.Background(), blockID, blocks)
-
 	if err != nil {
 		return notion.Block{}, err
 	}

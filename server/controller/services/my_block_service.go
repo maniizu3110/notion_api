@@ -18,13 +18,15 @@ type myBlockServiceImpl struct {
 	user *models.MyUser
 	repo MyBlockRepository
 	blockService BlockService
+	richTextBlockRepo MyRichTextBlockRepository
 }
 
-func NewMyBlockService(repo MyBlockRepository, user *models.MyUser, blockService BlockService) MyBlockService {
+func NewMyBlockService(repo MyBlockRepository, user *models.MyUser, blockService BlockService,richTextBlockRepo MyRichTextBlockRepository) MyBlockService {
 	res := &myBlockServiceImpl{
 		user: user,
 		repo: repo,
 		blockService: blockService,
+		richTextBlockRepo: richTextBlockRepo,
 	}
 	return res
 }
@@ -37,9 +39,14 @@ func (u *myBlockServiceImpl) GetAndCreateChildren(key string, blockID string) ([
 	registerdBlocks := []models.MyBlock{}
 	blocks := getBlockRes.Results
 	for _,block:=range blocks{
+
 		myblock := models.ChangeToMyBlock(block,u.user)
 		//TODO:途中でエラーが起こった時にどうするか（ロールバックできるようにしたい）
 		newblock,_ := u.repo.AddChild(myblock)
+		if newblock.Paragraph != nil {
+			newMyRichTextBlock := models.ChangeToMyRichTextBlock(newblock.Paragraph,newblock.ID)
+			u.richTextBlockRepo.Create(newMyRichTextBlock)
+		}
 		//TODO:複数回処理するのでエラーハンドリングスキップしているがやるべき
 		registerdBlocks = append(registerdBlocks, *newblock)
 	}
