@@ -6,12 +6,14 @@ import (
 
 type MyBlockRepository interface {
 	AddChild(data *models.MyBlock) (*models.MyBlock, error)
+	GetBlockByID(blockID string) (*models.MyBlock, error)
 	GetAllBlocks() ([]models.MyBlock, error)
 }
 
 type MyBlockService interface {
 	GetAndCreateChildren(key string, blockID string) ([]models.MyBlock, error)
 	GetAllBlocks() ([]models.MyBlock, error)
+	GetChildrenByID(blockID string) (*models.MyBlock, error)
 }
 
 type myBlockServiceImpl struct {
@@ -73,4 +75,11 @@ func(u *myBlockServiceImpl)GetAllBlocks() ([]models.MyBlock, error){
 		return nil,err
 	}
 	return blocks,nil
+}
+func(u *myBlockServiceImpl)GetChildrenByID(blockID string) (*models.MyBlock, error) {
+	block,err := u.repo.GetBlockByID(blockID)
+	if err != nil {
+		return nil,err
+	}
+	return block,nil
 }
