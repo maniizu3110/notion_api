@@ -31,6 +31,7 @@ func AssignMyBlockHandlers(g *echo.Group) {
 	g.POST("/", GetAndCreateMyBlockChildrenHandler)
 	g.GET("/:id", GetMyBlockByIDHandler)
 	g.GET("/:id/children", GetMyBlockChildenByIDHandler)
+	g.GET("/:id/childrenInfo", GetMyBlockChildenInfoByIDHandler)
 	g.GET("/", GetAllMyBlockHandler)
 	// g.GET("/:id/children", GetAllMyChildrenHandler)
 }
@@ -71,10 +72,24 @@ func GetMyBlockByIDHandler(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, blocks)
 }
+
+//GetMyBlockChildenByIDHandlerは親IDに紐づくMyBlockの配列を返す(my_rich_text_blockの情報は返さない)
 func GetMyBlockChildenByIDHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
 	blockID := c.Param("id")
 	blocks, err := service.GetMyBlockChildrenByParentID(blockID)
+	if err != nil {
+		fmt.Println(err)
+		return errors.New("ブロックの取得に失敗しました")
+	}
+	return c.JSON(http.StatusOK, blocks)
+}
+
+//GetMyBlockChildenInfoByIDHandlerは親IDに紐づくMyBlockの配列を返す(my_rich_text_blockの情報を返す)
+func GetMyBlockChildenInfoByIDHandler(c echo.Context) error {
+	service := c.Get("Service").(services.MyBlockService)
+	blockID := c.Param("id")
+	blocks, err := service.GetMyBlockChildrenInfoByParentID(blockID)
 	if err != nil {
 		fmt.Println(err)
 		return errors.New("ブロックの取得に失敗しました")

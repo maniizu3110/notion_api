@@ -3,7 +3,6 @@ package services
 import (
 	"fmt"
 	"server/models"
-
 )
 
 type MyBlockRepository interface {
@@ -18,6 +17,7 @@ type MyBlockService interface {
 	GetAllBlocks() ([]models.MyBlock, error)
 	GetChildrenByID(blockID string) (*models.MyBlock, error)
 	GetMyBlockChildrenByParentID(parentBlockID string) ([]models.MyBlock, error)
+	GetMyBlockChildrenInfoByParentID(parentBlockID string) ([]*models.MyBlock, error)
 }
 
 type myBlockServiceImpl struct {
@@ -47,14 +47,15 @@ func (u *myBlockServiceImpl) GetAndCreateChildren(key string, blockID string) ([
 	registerdBlocks := []models.MyBlock{}
 	blocks := getBlockRes.Results
 	for _, block := range blocks {
-
 		myblock := models.ChangeToMyBlock(block, u.user,blockID)
 		//TODO:途中でエラーが起こった時にどうするか（ロールバックできるようにしたい）
 		//idが被ったものはpanicではなくで無視する?（重複している時はログに出力する）
 		newblock, _ := u.repo.AddChild(myblock)
 		//Typeで条件分岐にする
-		if newblock.Paragraph != nil {
-			myRichTextBlock := models.ChangeToMyRichTextBlock(newblock.Paragraph, newblock.ID)
+		//このif文抽象化する
+		if newblock.Type == "toggle" || newblock.Type == "paragraph" {
+			//Typeをなんでも受け取れるように修正
+			myRichTextBlock := models.ChangeToMyRichTextBlock(newblock.Toggle, newblock.ID)
 			newMyRichTextBlock, err := u.richTextBlockRepo.Create(myRichTextBlock)
 			if err != nil {
 				return nil, err
@@ -89,12 +90,30 @@ func (u *myBlockServiceImpl) GetChildrenByID(blockID string) (*models.MyBlock, e
 }
 
 func (u *myBlockServiceImpl) GetMyBlockChildrenByParentID(blockID string) ([]models.MyBlock, error) {
-	fmt.Println("ここ")
 	myBlocks, err := u.repo.GetMyBlockChildrenByParentID(blockID)
 	if err != nil {
 		return nil, err
 	}
 	return myBlocks, nil
+}
+func (u *myBlockServiceImpl) GetMyBlockChildrenInfoByParentID(blockID string) ([]*models.MyBlock, error) {
+	var result []*models.MyBlock
+	myBlocks, err := u.repo.GetMyBlockChildrenByParentID(blockID)
+	if err != nil {
+		return nil,err
+	}
+	for i := range myBlocks{
+		richTextBlock,err := u.richTextBlockRepo.GetRichTextBlockByBlockID(myBlocks[i].ID)
+		if err != nil {
+			return nil,err
+		}
+		myBlocks[i].MyRichTextBlock = *richTextBlock
+		fmt.Printf("%+v\n",myBlocks[i])
+		result = append(result,&models.MyBlock{
+			UserID: myBlocks[i].UserID,
+		})
+	}
+	return result,nil
 }
 
 
