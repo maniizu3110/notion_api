@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"server/controller/repositories"
 	"server/controller/services"
@@ -29,8 +30,12 @@ func AssignMyBlockHandlers(g *echo.Group) {
 	})
 	g.POST("/", GetAndCreateMyBlockChildrenHandler)
 	g.GET("/:id", GetMyBlockByIDHandler)
+	g.GET("/:id/children", GetMyBlockChildenByIDHandler)
 	g.GET("/", GetAllMyBlockHandler)
+	// g.GET("/:id/children", GetAllMyChildrenHandler)
 }
+//1,IDに紐づく子供のブロックを配列で取得（has_childがtrueなら取得する）
+//2,上記配列をmapで回して紐づくIDから文字列を取得
 
 func GetAndCreateMyBlockChildrenHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
@@ -47,6 +52,7 @@ func GetAndCreateMyBlockChildrenHandler(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, data)
 }
+
 func GetAllMyBlockHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
 	blocks, err := service.GetAllBlocks()
@@ -55,6 +61,7 @@ func GetAllMyBlockHandler(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, blocks)
 }
+
 func GetMyBlockByIDHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
 	blockID := c.Param("id")
@@ -64,3 +71,23 @@ func GetMyBlockByIDHandler(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, blocks)
 }
+func GetMyBlockChildenByIDHandler(c echo.Context) error {
+	service := c.Get("Service").(services.MyBlockService)
+	blockID := c.Param("id")
+	blocks, err := service.GetMyBlockChildrenByParentID(blockID)
+	if err != nil {
+		fmt.Println(err)
+		return errors.New("ブロックの取得に失敗しました")
+	}
+	return c.JSON(http.StatusOK, blocks)
+}
+
+
+// func GetAllMyChildrenHandler(c echo.Context) error {
+// 	service := c.Get("Service").(services.MyBlockService)
+// 	blocks, err := service.GetAllBlocks()
+// 	if err != nil {
+// 		return errors.New("ブロックの取得に失敗しました")
+// 	}
+// 	return c.JSON(http.StatusOK, blocks)
+// }

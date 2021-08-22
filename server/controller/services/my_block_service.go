@@ -1,19 +1,23 @@
 package services
 
 import (
+	"fmt"
 	"server/models"
+
 )
 
 type MyBlockRepository interface {
 	AddChild(data *models.MyBlock) (*models.MyBlock, error)
 	GetBlockByID(blockID string) (*models.MyBlock, error)
 	GetAllBlocks() ([]models.MyBlock, error)
+	GetMyBlockChildrenByParentID(parentBlockID string) ([]models.MyBlock, error)
 }
 
 type MyBlockService interface {
 	GetAndCreateChildren(key string, blockID string) ([]models.MyBlock, error)
 	GetAllBlocks() ([]models.MyBlock, error)
 	GetChildrenByID(blockID string) (*models.MyBlock, error)
+	GetMyBlockChildrenByParentID(parentBlockID string) ([]models.MyBlock, error)
 }
 
 type myBlockServiceImpl struct {
@@ -44,7 +48,7 @@ func (u *myBlockServiceImpl) GetAndCreateChildren(key string, blockID string) ([
 	blocks := getBlockRes.Results
 	for _, block := range blocks {
 
-		myblock := models.ChangeToMyBlock(block, u.user)
+		myblock := models.ChangeToMyBlock(block, u.user,blockID)
 		//TODO:途中でエラーが起こった時にどうするか（ロールバックできるようにしたい）
 		//idが被ったものはpanicではなくで無視する?（重複している時はログに出力する）
 		newblock, _ := u.repo.AddChild(myblock)
@@ -83,3 +87,14 @@ func (u *myBlockServiceImpl) GetChildrenByID(blockID string) (*models.MyBlock, e
 	}
 	return block, nil
 }
+
+func (u *myBlockServiceImpl) GetMyBlockChildrenByParentID(blockID string) ([]models.MyBlock, error) {
+	fmt.Println("ここ")
+	myBlocks, err := u.repo.GetMyBlockChildrenByParentID(blockID)
+	if err != nil {
+		return nil, err
+	}
+	return myBlocks, nil
+}
+
+
