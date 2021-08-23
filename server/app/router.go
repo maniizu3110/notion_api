@@ -10,6 +10,7 @@ import (
 func InitRouter(serverConf *Server) {
 	e := echo.New()
 	middlewares.CORS(e)
+	e.Use(middlewares.LoggingMiddleware)
 
 	//認証不要
 	{
