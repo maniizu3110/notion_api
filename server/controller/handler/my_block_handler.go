@@ -88,8 +88,8 @@ func GetMyBlockChildenInfoByIDHandler(c echo.Context) error {
 	blockID := c.Param("id")
 	blocks, err := service.GetMyBlockChildrenInfoByParentID(blockID)
 	var result []models.MyBlock
-	for i := range blocks{
-		result = append(result,*blocks[i])
+	for i := range blocks {
+		result = append(result, *blocks[i])
 	}
 	if err != nil {
 		fmt.Println(err)
@@ -97,7 +97,6 @@ func GetMyBlockChildenInfoByIDHandler(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, result)
 }
-
 
 // func GetAllMyChildrenHandler(c echo.Context) error {
 // 	service := c.Get("Service").(services.MyBlockService)

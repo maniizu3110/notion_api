@@ -47,11 +47,11 @@ func (u *myBlockRepositoryImpl) GetBlockByID(blockID string) (*models.MyBlock, e
 	return block, nil
 }
 
-func (u *myBlockRepositoryImpl)GetMyBlockChildrenByParentID(parentBlockID string) ([]models.MyBlock, error){
+func (u *myBlockRepositoryImpl) GetMyBlockChildrenByParentID(parentBlockID string) ([]models.MyBlock, error) {
 	blocks := []models.MyBlock{}
-	if err := u.db.Where("my_block_id = ?",parentBlockID).Find(&blocks).Error; err != nil {
+	if err := u.db.Where("my_block_id = ?", parentBlockID).Find(&blocks).Error; err != nil {
 		fmt.Println(err)
 		return nil, errors.New("ブロックの取得に失敗しました")
 	}
-	return blocks,nil
+	return blocks, nil
 }

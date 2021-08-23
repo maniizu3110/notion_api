@@ -46,7 +46,7 @@ func (u *myBlockServiceImpl) GetAndCreateChildren(key string, blockID string) ([
 	registerdBlocks := []models.MyBlock{}
 	blocks := getBlockRes.Results
 	for _, block := range blocks {
-		myblock := models.ChangeToMyBlock(block, u.user,blockID)
+		myblock := models.ChangeToMyBlock(block, u.user, blockID)
 		//TODO:途中でエラーが起こった時にどうするか（ロールバックできるようにしたい）
 		//idが被ったものはpanicではなくで無視する?（重複している時はログに出力する）
 		newblock, _ := u.repo.AddChild(myblock)
@@ -99,38 +99,36 @@ func (u *myBlockServiceImpl) GetMyBlockChildrenInfoByParentID(blockID string) ([
 	var result []*models.MyBlock
 	myBlocks, err := u.repo.GetMyBlockChildrenByParentID(blockID)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
-	for _,b := range myBlocks{
-		richTextBlock,err := u.richTextBlockRepo.GetRichTextBlockByBlockID(b.ID)
+	for _, b := range myBlocks {
+		richTextBlock, err := u.richTextBlockRepo.GetRichTextBlockByBlockID(b.ID)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		b.MyRichTextBlock = *richTextBlock
-		result = append(result,&models.MyBlock{
-			Object:b.Object,
-			ID :b.ID,
-			Type:b.Type,
-			CreatedTime:b.CreatedTime,
-			LastEditedTime:b.LastEditedTime,
-			HasChildren:b.HasChildren,
-			Paragraph:b.Paragraph,
-			Heading1:b.Heading1,
-			Heading2:b.Heading2,
-			Heading3:b.Heading3,
-			BulletedListItem:b.BulletedListItem,
-			NumberedListItem:b.NumberedListItem,
-			ToDo:b.ToDo,
-			Toggle:b.Toggle,
-			ChildPage:b.ChildPage,
-			DisplayTime:b.DisplayTime,
-			MyBlockID:b.MyBlockID,
-			UserID:b.UserID,
-			MyRichTextBlock:b.MyRichTextBlock,
+		result = append(result, &models.MyBlock{
+			Object:           b.Object,
+			ID:               b.ID,
+			Type:             b.Type,
+			CreatedTime:      b.CreatedTime,
+			LastEditedTime:   b.LastEditedTime,
+			HasChildren:      b.HasChildren,
+			Paragraph:        b.Paragraph,
+			Heading1:         b.Heading1,
+			Heading2:         b.Heading2,
+			Heading3:         b.Heading3,
+			BulletedListItem: b.BulletedListItem,
+			NumberedListItem: b.NumberedListItem,
+			ToDo:             b.ToDo,
+			Toggle:           b.Toggle,
+			ChildPage:        b.ChildPage,
+			DisplayTime:      b.DisplayTime,
+			MyBlockID:        b.MyBlockID,
+			UserID:           b.UserID,
+			MyRichTextBlock:  b.MyRichTextBlock,
 		})
 	}
 
-	return result,nil
+	return result, nil
 }
-
-
