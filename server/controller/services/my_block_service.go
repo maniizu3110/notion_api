@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"server/models"
 )
 
@@ -102,17 +101,35 @@ func (u *myBlockServiceImpl) GetMyBlockChildrenInfoByParentID(blockID string) ([
 	if err != nil {
 		return nil,err
 	}
-	for i := range myBlocks{
-		richTextBlock,err := u.richTextBlockRepo.GetRichTextBlockByBlockID(myBlocks[i].ID)
+	for _,b := range myBlocks{
+		richTextBlock,err := u.richTextBlockRepo.GetRichTextBlockByBlockID(b.ID)
 		if err != nil {
 			return nil,err
 		}
-		myBlocks[i].MyRichTextBlock = *richTextBlock
-		fmt.Printf("%+v\n",myBlocks[i])
+		b.MyRichTextBlock = *richTextBlock
 		result = append(result,&models.MyBlock{
-			UserID: myBlocks[i].UserID,
+			Object:b.Object,
+			ID :b.ID,
+			Type:b.Type,
+			CreatedTime:b.CreatedTime,
+			LastEditedTime:b.LastEditedTime,
+			HasChildren:b.HasChildren,
+			Paragraph:b.Paragraph,
+			Heading1:b.Heading1,
+			Heading2:b.Heading2,
+			Heading3:b.Heading3,
+			BulletedListItem:b.BulletedListItem,
+			NumberedListItem:b.NumberedListItem,
+			ToDo:b.ToDo,
+			Toggle:b.Toggle,
+			ChildPage:b.ChildPage,
+			DisplayTime:b.DisplayTime,
+			MyBlockID:b.MyBlockID,
+			UserID:b.UserID,
+			MyRichTextBlock:b.MyRichTextBlock,
 		})
 	}
+
 	return result,nil
 }
 

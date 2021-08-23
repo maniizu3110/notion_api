@@ -33,10 +33,7 @@ func AssignMyBlockHandlers(g *echo.Group) {
 	g.GET("/:id/children", GetMyBlockChildenByIDHandler)
 	g.GET("/:id/childrenInfo", GetMyBlockChildenInfoByIDHandler)
 	g.GET("/", GetAllMyBlockHandler)
-	// g.GET("/:id/children", GetAllMyChildrenHandler)
 }
-//1,IDに紐づく子供のブロックを配列で取得（has_childがtrueなら取得する）
-//2,上記配列をmapで回して紐づくIDから文字列を取得
 
 func GetAndCreateMyBlockChildrenHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
@@ -90,11 +87,15 @@ func GetMyBlockChildenInfoByIDHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
 	blockID := c.Param("id")
 	blocks, err := service.GetMyBlockChildrenInfoByParentID(blockID)
+	var result []models.MyBlock
+	for i := range blocks{
+		result = append(result,*blocks[i])
+	}
 	if err != nil {
 		fmt.Println(err)
 		return errors.New("ブロックの取得に失敗しました")
 	}
-	return c.JSON(http.StatusOK, blocks)
+	return c.JSON(http.StatusOK, result)
 }
 
 
