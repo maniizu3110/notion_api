@@ -10,7 +10,7 @@ type MyUser struct {
 	gorm.Model
 	User           string `json:"user" gorm:"unique not null"`
 	HashedPassword string `json:"-" validate:"min=6"`
-	MyBlocks []MyBlock
+	MyBlocks       []MyBlock
 }
 
 type LoginUserResponse struct {
