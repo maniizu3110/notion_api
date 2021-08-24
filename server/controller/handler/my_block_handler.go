@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"server/controller/repositories"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 func AssignMyBlockHandlers(g *echo.Group) {
@@ -42,11 +42,11 @@ func GetAndCreateMyBlockChildrenHandler(c echo.Context) error {
 		ParentBlockID string
 	}
 	if err := c.Bind(&params); err != nil {
-		return errors.New("送られた情報を取得できませんでした")
+		return errors.Cause(err)
 	}
 	data, err := service.GetAndCreateChildren(params.SecretKey, params.ParentBlockID)
 	if err != nil {
-		return errors.New("ブロックの取得に失敗しました")
+		return errors.Cause(err)
 	}
 	return c.JSON(http.StatusOK, data)
 }
@@ -55,7 +55,7 @@ func GetAllMyBlockHandler(c echo.Context) error {
 	service := c.Get("Service").(services.MyBlockService)
 	blocks, err := service.GetAllBlocks()
 	if err != nil {
-		return errors.New("ブロックの取得に失敗しました")
+		return errors.Cause(err)
 	}
 	return c.JSON(http.StatusOK, blocks)
 }
@@ -65,7 +65,7 @@ func GetMyBlockByIDHandler(c echo.Context) error {
 	blockID := c.Param("id")
 	blocks, err := service.GetChildrenByID(blockID)
 	if err != nil {
-		return errors.New("ブロックの取得に失敗しました")
+		return errors.Cause(err)
 	}
 	return c.JSON(http.StatusOK, blocks)
 }
@@ -77,7 +77,7 @@ func GetMyBlockChildenByIDHandler(c echo.Context) error {
 	blocks, err := service.GetMyBlockChildrenByParentID(blockID)
 	if err != nil {
 		fmt.Println(err)
-		return errors.New("ブロックの取得に失敗しました")
+		return errors.Cause(err)
 	}
 	return c.JSON(http.StatusOK, blocks)
 }
@@ -93,16 +93,8 @@ func GetMyBlockChildenInfoByIDHandler(c echo.Context) error {
 	}
 	if err != nil {
 		fmt.Println(err)
-		return errors.New("ブロックの取得に失敗しました")
+		return errors.Cause(err)
 	}
 	return c.JSON(http.StatusOK, result)
 }
 
-// func GetAllMyChildrenHandler(c echo.Context) error {
-// 	service := c.Get("Service").(services.MyBlockService)
-// 	blocks, err := service.GetAllBlocks()
-// 	if err != nil {
-// 		return errors.New("ブロックの取得に失敗しました")
-// 	}
-// 	return c.JSON(http.StatusOK, blocks)
-// }
