@@ -35,7 +35,7 @@ type SearchResponse struct {
 type SearchResults []interface{}
 
 const SearchSortTimestampLastEditedTime SearchSortTimestamp = "last_edited_time"
-//revert test
+
 func (sr *SearchResults) UnmarshalJSON(b []byte) error {
 	rawResults := []json.RawMessage{}
 	err := json.Unmarshal(b, &rawResults)
